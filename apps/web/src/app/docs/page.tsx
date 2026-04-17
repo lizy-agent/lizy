@@ -126,20 +126,178 @@ Content-Type: application/json`}
         </section>
 
         {/* Payment */}
-        <section className="glass rounded-2xl p-8 mb-8">
-          <h2 className="font-display text-2xl font-bold text-white mb-4">Payment</h2>
-          <div className="space-y-3 text-sm text-muted-foreground">
-            <p>Every call is paid via x402 or MPP. Pudgy Penguin holders get 50% off automatically.</p>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="glass rounded-xl p-4">
-                <div className="font-semibold text-white mb-2">x402</div>
-                <p>Include <code className="font-mono text-neon-green">X-Payment</code> header with signed payment proof. Facilitator: <code className="font-mono text-xs">facilitator.x402.abs.xyz</code></p>
-              </div>
-              <div className="glass rounded-xl p-4">
-                <div className="font-semibold text-white mb-2">MPP Session</div>
-                <p>Include <code className="font-mono text-neon-green">X-Mpp-Session-Id</code> header with an active MPP session. Endpoint: <code className="font-mono text-xs">mpp.abs.xyz</code></p>
-              </div>
+        <section id="payment" className="glass rounded-2xl p-8 mb-8">
+          <h2 className="font-display text-2xl font-bold text-white mb-2">Payment</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            Every call requires payment via x402 (per-call) or MPP (session-based). Pudgy Penguin holders receive a 50% discount automatically. The <a href="/playground" className="text-neon-green underline">Playground</a> gives you 20 free demo calls per day to explore the API first.
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4 mb-8">
+            <div className="glass rounded-xl p-4 border border-neon-green/20">
+              <div className="font-semibold text-white mb-1">x402 — Pay Per Call</div>
+              <p className="text-xs text-muted-foreground">Sign an ERC-3009 <code className="font-mono text-neon-green">TransferWithAuthorization</code> for each request. No session needed. Verified on-chain by the Abstract facilitator.</p>
             </div>
+            <div className="glass rounded-xl p-4">
+              <div className="font-semibold text-white mb-1">MPP — Session Billing</div>
+              <p className="text-xs text-muted-foreground">Open a payment session with MPP, then pass <code className="font-mono text-neon-green">X-Mpp-Session-Id</code>. Calls are streamed off-chain against your session balance.</p>
+            </div>
+          </div>
+
+          {/* 402 flow */}
+          <h3 className="text-base font-semibold text-white mb-3">x402 Flow</h3>
+          <ol className="text-sm text-muted-foreground space-y-1 mb-4 list-decimal list-inside">
+            <li>Send your request without a payment header.</li>
+            <li>Receive HTTP <code className="font-mono text-neon-green">402</code> with payment details in the response body.</li>
+            <li>Sign a <code className="font-mono text-neon-green">TransferWithAuthorization</code> EIP-712 message with your wallet.</li>
+            <li>Retry the request with <code className="font-mono text-neon-green">X-Payment: &lt;base64-payload&gt;</code>.</li>
+          </ol>
+
+          <h3 className="text-sm font-semibold text-white mb-2">402 Response Shape</h3>
+          <pre className="glass rounded-lg p-4 font-mono text-xs text-muted-foreground overflow-x-auto mb-6">
+{`HTTP/1.1 402 Payment Required
+{
+  "ok": false,
+  "error": {
+    "code": "PAYMENT_REQUIRED",
+    "details": {
+      "x402": {
+        "scheme": "exact",
+        "network": "abstract-2741",
+        "maxAmountRequired": "5000",      // in USDC micro-units (6 decimals)
+        "payTo": "0x<LIZY_RECIPIENT>",
+        "asset":  "0x<USDC_E_CONTRACT>",  // USDC.e on Abstract Mainnet
+        "maxTimeoutSeconds": 300,
+        "extra": { "facilitator": "https://facilitator.x402.abs.xyz" }
+      }
+    }
+  }
+}`}
+          </pre>
+
+          <h3 className="text-sm font-semibold text-white mb-2">Sign & Retry (TypeScript + viem)</h3>
+          <pre className="glass rounded-lg p-4 font-mono text-xs text-neon-green overflow-x-auto mb-6">
+{`import { createWalletClient, http, toHex } from 'viem';
+import { abstract } from 'viem/chains';
+import { randomBytes } from 'crypto';
+
+const MCP_URL   = 'https://mcp.lizy.world';
+const WALLET    = '0xYourAbstractWallet';
+
+async function callWithPayment(toolName: string, args: object) {
+  // 1. Initial request — expect 402
+  const probe = await fetch(\`\${MCP_URL}/mcp\`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Wallet-Address': WALLET },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call',
+      params: { name: toolName, arguments: args } }),
+  });
+
+  if (probe.status !== 402) return probe.json(); // already paid or error
+
+  const { error } = await probe.json();
+  const { payTo, asset, maxAmountRequired, maxTimeoutSeconds } = error.details.x402;
+
+  // 2. Sign ERC-3009 TransferWithAuthorization
+  const nonce       = toHex(randomBytes(32));
+  const validAfter  = 0n;
+  const validBefore = BigInt(Math.floor(Date.now() / 1000) + maxTimeoutSeconds);
+
+  const signature = await walletClient.signTypedData({
+    domain: {
+      name: 'USD Coin',
+      version: '2',
+      chainId: 2741,              // Abstract Mainnet
+      verifyingContract: asset,   // USDC.e contract
+    },
+    types: {
+      TransferWithAuthorization: [
+        { name: 'from',        type: 'address' },
+        { name: 'to',          type: 'address' },
+        { name: 'value',       type: 'uint256' },
+        { name: 'validAfter',  type: 'uint256' },
+        { name: 'validBefore', type: 'uint256' },
+        { name: 'nonce',       type: 'bytes32' },
+      ],
+    },
+    primaryType: 'TransferWithAuthorization',
+    message: {
+      from:        WALLET,
+      to:          payTo,
+      value:       BigInt(maxAmountRequired),
+      validAfter,
+      validBefore,
+      nonce,
+    },
+  });
+
+  // 3. Build X-Payment header (base64-encoded JSON)
+  const payment = btoa(JSON.stringify({
+    scheme:  'exact',
+    network: 'abstract-2741',
+    payload: {
+      signature,
+      authorization: {
+        from:        WALLET,
+        to:          payTo,
+        value:       maxAmountRequired,
+        validAfter:  String(validAfter),
+        validBefore: String(validBefore),
+        nonce,
+      },
+    },
+  }));
+
+  // 4. Retry with payment
+  const paid = await fetch(\`\${MCP_URL}/mcp\`, {
+    method: 'POST',
+    headers: {
+      'Content-Type':    'application/json',
+      'X-Wallet-Address': WALLET,
+      'X-Payment':        payment,
+    },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call',
+      params: { name: toolName, arguments: args } }),
+  });
+
+  return paid.json();
+}`}
+          </pre>
+
+          {/* MPP */}
+          <h3 className="text-base font-semibold text-white mb-3">MPP Session Flow</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Open an MPP session once, then reuse the session ID across many calls without re-signing each time. Ideal for agents making many sequential tool calls.
+          </p>
+          <pre className="glass rounded-lg p-4 font-mono text-xs text-neon-green overflow-x-auto mb-4">
+{`// 1. Open MPP session (deposit USDC.e against a session)
+const session = await fetch('https://mpp.abs.xyz/session', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    walletAddress: WALLET,
+    amountUsdc: 1.00,   // pre-fund 1 USDC.e
+    chainId: 2741,
+  }),
+}).then(r => r.json());
+
+const sessionId = session.sessionId;  // keep this
+
+// 2. Call LIZY with session header
+const res = await fetch(\`\${MCP_URL}/mcp\`, {
+  method: 'POST',
+  headers: {
+    'Content-Type':     'application/json',
+    'X-Wallet-Address':  WALLET,
+    'X-Mpp-Session-Id':  sessionId,
+  },
+  body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call',
+    params: { name: 'get_wallet_activity', arguments: { address: WALLET } } }),
+});`}
+          </pre>
+
+          {/* Pudgy discount */}
+          <div className="glass rounded-xl p-4 border border-neon-green/10 text-xs text-muted-foreground">
+            <span className="text-neon-green font-semibold">Pudgy Penguin holders</span> — 50% discount applied automatically. The server detects your wallet&apos;s balance on Ethereum Mainnet and halves the <code className="font-mono">maxAmountRequired</code> in the 402 response. No extra steps needed.
           </div>
         </section>
 
