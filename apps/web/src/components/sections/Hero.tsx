@@ -53,48 +53,15 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-neon-green/20 text-xs text-neon-green mb-6"
-        >
-          <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse" />
-          Live on Abstract Mainnet · chainId 2741
-        </motion.div>
-
         {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="font-display text-5xl sm:text-6xl md:text-7xl font-bold text-white leading-tight mb-3"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="font-display text-5xl sm:text-6xl md:text-7xl font-bold text-white leading-tight mb-8"
         >
           Meet <span className="gradient-text">LIZY</span>
         </motion.h1>
-
-        {/* Tagline */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.35 }}
-          className="font-display text-2xl sm:text-3xl font-bold mb-6"
-        >
-          <span className="text-neon-green">she queries.</span>{' '}
-          <span className="text-white/60">you build.</span>
-        </motion.p>
-
-        {/* Subheadline */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-base text-muted-foreground max-w-md mx-auto mb-10"
-        >
-          The data layer AI agents pay to use. Monetized on-chain tools via MCP —
-          live blockchain data, paid per call with x402 micropayments.
-        </motion.p>
 
         {/* CTAs */}
         <motion.div
