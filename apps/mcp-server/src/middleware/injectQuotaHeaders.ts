@@ -5,8 +5,9 @@ export function injectQuotaHeaders(req: Request, res: Response, next: NextFuncti
     // Headers are already sent; this is for logging only
   });
 
-  const originalJson = res.json.bind(res);
-  res.json = function (body: unknown) {
+  const originalJson = res.json.bind(res) as (body?: unknown) => Response;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (res as any).json = function (body?: unknown) {
     if (req.quotaUsed !== undefined && req.quotaLimit !== undefined) {
       res.setHeader('X-Quota-Used', req.quotaUsed.toString());
       res.setHeader('X-Quota-Limit', req.quotaLimit.toString());

@@ -1,4 +1,4 @@
-import { createPublicClient, http, PublicClient, Chain } from 'viem';
+import { createPublicClient, http, type PublicClient, type Chain } from 'viem';
 import { config } from '../config';
 
 const abstractMainnet: Chain = {
@@ -27,23 +27,6 @@ const ethereumMainnet: Chain = {
   },
 };
 
-// Dual-RPC client with automatic fallback
-async function createResilientClient(
-  primaryUrl: string,
-  fallbackUrl: string,
-  chain: Chain,
-): Promise<PublicClient> {
-  return createPublicClient({
-    chain,
-    transport: http(primaryUrl, {
-      retryCount: 2,
-      retryDelay: 500,
-      timeout: 10_000,
-      onFetchRequest: undefined,
-      fetchOptions: {},
-    }),
-  }) as PublicClient;
-}
 
 export const abstractClient: PublicClient = createPublicClient({
   chain: abstractMainnet,

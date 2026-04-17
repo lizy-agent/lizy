@@ -6,7 +6,7 @@
  */
 
 import { z } from 'zod';
-import { isAddress, encodeFunctionData, decodeFunctionResult } from 'viem';
+import { isAddress } from 'viem';
 import { config } from '../config';
 import { abstractClient, abstractClientFallback, withFallback } from '../lib/rpc';
 import { cacheGet, cacheSet } from '../lib/redis';
