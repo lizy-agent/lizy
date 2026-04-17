@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Circle, ArrowRight, ArrowLeft, Zap, FileText, Key, Code2, Rocket } from 'lucide-react';
 import { useAccount } from 'wagmi';
@@ -14,7 +14,10 @@ const STEPS = [
   { id: 5, title: 'Get API Key', icon: Rocket, description: 'Copy your configuration' },
 ];
 
+const STORAGE_KEY = 'lizy_onboarding_step';
+
 export default function StartPage() {
+  const [mounted, setMounted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'free' | 'pay-per-use'>('free');
@@ -22,6 +25,17 @@ export default function StartPage() {
   const [testing, setTesting] = useState(false);
 
   const { address: walletAddress } = useAccount();
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) setCurrentStep(Math.min(parseInt(saved, 10), STEPS.length));
+    setMounted(true);
+  }, []);
+
+  const goToStep = (step: number) => {
+    localStorage.setItem(STORAGE_KEY, String(step));
+    setCurrentStep(step);
+  };
 
   const canProceed = () => {
     if (currentStep === 1) return !!walletAddress;
@@ -40,7 +54,7 @@ export default function StartPage() {
         body: JSON.stringify({ version: 1 }),
       }).catch(() => {});
     }
-    setCurrentStep(currentStep + 1);
+    goToStep(currentStep + 1);
   };
 
   const handleTestTool = async () => {
@@ -74,6 +88,8 @@ export default function StartPage() {
         },
       }, null, 2)
     : '';
+
+  if (!mounted) return null;
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -249,7 +265,7 @@ export default function StartPage() {
         {/* Navigation */}
         <div className="flex items-center justify-between mt-6">
           <button
-            onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+            onClick={() => goToStep(Math.max(1, currentStep - 1))}
             disabled={currentStep === 1}
             className="flex items-center gap-2 px-4 py-2 rounded-xl glass text-sm text-muted-foreground hover:text-white disabled:opacity-30 transition-all"
           >
@@ -267,6 +283,7 @@ export default function StartPage() {
           ) : (
             <Link
               href="/"
+              onClick={() => localStorage.removeItem(STORAGE_KEY)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neon-green text-black font-semibold text-sm hover:bg-neon-green/90 transition-all"
             >
               Done <CheckCircle className="w-4 h-4" />
