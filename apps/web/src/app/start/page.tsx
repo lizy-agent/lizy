@@ -31,6 +31,18 @@ export default function StartPage() {
     return true;
   };
 
+  const handleNext = async () => {
+    if (currentStep === 2 && termsAccepted && walletAddress) {
+      const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
+      await fetch(`${mcpUrl}/terms/agree`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Wallet-Address': walletAddress },
+        body: JSON.stringify({ version: 1 }),
+      }).catch(() => {});
+    }
+    setCurrentStep(currentStep + 1);
+  };
+
   const handleTestTool = async () => {
     if (!walletAddress) return;
     setTesting(true);
@@ -246,7 +258,7 @@ export default function StartPage() {
           <span className="text-xs text-muted-foreground">{currentStep} / {STEPS.length}</span>
           {currentStep < STEPS.length ? (
             <button
-              onClick={() => setCurrentStep(currentStep + 1)}
+              onClick={handleNext}
               disabled={!canProceed()}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neon-green text-black font-semibold text-sm hover:bg-neon-green/90 disabled:opacity-30 transition-all"
             >
