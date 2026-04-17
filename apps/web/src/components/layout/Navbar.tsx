@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Zap } from 'lucide-react';
-import { useAbstractClient } from '@abstract-foundation/agw-react';
+import { useAccount } from 'wagmi';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
@@ -112,16 +112,14 @@ export function Navbar() {
 }
 
 function ConnectButton() {
-  const { data: client } = useAbstractClient();
+  const { address } = useAccount();
 
-  if (client?.account) {
-    return (
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-sm text-muted-foreground">
-        <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
-        {`${client.account.address.slice(0, 6)}...${client.account.address.slice(-4)}`}
-      </div>
-    );
-  }
+  if (!address) return null;
 
-  return null;
+  return (
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-sm text-muted-foreground">
+      <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
+      {`${address.slice(0, 6)}...${address.slice(-4)}`}
+    </div>
+  );
 }

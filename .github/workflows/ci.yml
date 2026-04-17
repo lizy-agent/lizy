@@ -49,6 +49,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build types package
+        run: pnpm --filter @lizy/types build
+
       - name: Lint
         run: pnpm lint
 

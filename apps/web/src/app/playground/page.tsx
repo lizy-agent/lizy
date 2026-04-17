@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Play, Copy, Check } from 'lucide-react';
-import { useAbstractClient } from '@abstract-foundation/agw-react';
+import { useAccount } from 'wagmi';
 
 const EXAMPLE_CALLS = [
   {
@@ -29,8 +29,7 @@ export default function PlaygroundPage() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const { data: client } = useAbstractClient();
-  const walletAddress = client?.account?.address;
+  const { address: walletAddress } = useAccount();
 
   const handleRun = async () => {
     if (!walletAddress) {

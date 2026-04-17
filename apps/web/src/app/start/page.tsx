@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Circle, ArrowRight, ArrowLeft, Zap, FileText, Key, Code2, Rocket } from 'lucide-react';
-import { useAbstractClient } from '@abstract-foundation/agw-react';
+import { useAccount } from 'wagmi';
 import Link from 'next/link';
 
 const STEPS = [
@@ -21,8 +21,7 @@ export default function StartPage() {
   const [testResult, setTestResult] = useState<string | null>(null);
   const [testing, setTesting] = useState(false);
 
-  const { data: client } = useAbstractClient();
-  const walletAddress = client?.account?.address;
+  const { address: walletAddress } = useAccount();
 
   const canProceed = () => {
     if (currentStep === 1) return !!walletAddress;
