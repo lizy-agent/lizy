@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Zap } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import Image from 'next/image';
 import { useAccount } from 'wagmi';
 import { useLoginWithAbstract } from '@abstract-foundation/agw-react';
 import { cn } from '@/lib/utils';
@@ -36,8 +37,8 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-neon-green/10 border border-neon-green/30 flex items-center justify-center group-hover:bg-neon-green/20 transition-colors">
-              <Zap className="w-4 h-4 text-neon-green" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden">
+              <Image src="/lizy.png" alt="LIZY" width={32} height={32} className="w-full h-full object-cover" />
             </div>
             <span className="font-display font-bold text-lg text-white">LIZY</span>
           </Link>
