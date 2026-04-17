@@ -6,6 +6,7 @@ import healthRouter from './routes/health';
 import toolsRouter from './routes/tools';
 import mcpRouter from './routes/mcp';
 import adminRouter from './routes/admin';
+import playgroundRouter from './routes/playground';
 
 const ALLOWED_ORIGINS = [
   'https://lizy.world',
@@ -67,6 +68,7 @@ export function createApp(): express.Application {
   app.use('/', healthRouter);
   app.use('/tools', toolsRouter);
   app.use('/', mcpRouter);
+  app.use('/', playgroundRouter);
   app.use('/admin', adminRouter);
 
   // 404
