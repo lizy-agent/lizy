@@ -60,27 +60,32 @@ export default function StartPage() {
   const handleTestTool = async () => {
     if (!walletAddress) return;
     setTesting(true);
+    setTestResult(null);
     try {
-      await new Promise((r) => setTimeout(r, 800));
-      setTestResult(JSON.stringify({
-        ok: true,
-        data: {
-          operation: 'validate_address',
-          result: walletAddress.toLowerCase(),
-          valid: true,
+      const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
+      const res = await fetch(`${mcpUrl}/tools/transform_data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Wallet-Address': walletAddress,
         },
-        meta: { tool: 'transform_data', cached: false, payment: 'free_quota', quotaRemaining: 99, processingMs: 12 },
-      }, null, 2));
+        body: JSON.stringify({ operation: 'validate_address', data: walletAddress }),
+      });
+      const data = await res.json();
+      setTestResult(JSON.stringify(data, null, 2));
+    } catch (err) {
+      setTestResult(JSON.stringify({ ok: false, error: String(err) }, null, 2));
     } finally {
       setTesting(false);
     }
   };
 
+  const mcpBaseUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
   const mcpConfig = walletAddress
     ? JSON.stringify({
         mcpServers: {
           lizy: {
-            url: process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world',
+            url: `${mcpBaseUrl}/mcp`,
             headers: {
               'X-Wallet-Address': walletAddress,
             },
