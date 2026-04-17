@@ -29,7 +29,7 @@ export function Footer() {
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg overflow-hidden">
-                <Image src="/lizy.png" alt="LIZY" width={32} height={32} className="w-full h-full object-cover" />
+                <Image src="/lizy.png" alt="LIZY" width={32} height={32} className="w-full h-full object-cover object-top" />
               </div>
               <span className="font-display font-bold text-lg text-white">LIZY</span>
             </Link>
