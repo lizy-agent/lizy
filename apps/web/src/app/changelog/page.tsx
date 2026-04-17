@@ -7,8 +7,23 @@ export const metadata: Metadata = {
 
 const CHANGES = [
   {
+    version: '0.2.0',
+    date: '2026-04-17',
+    type: 'release',
+    changes: [
+      'New hero section with floating LIZY character and animated frame',
+      'Quota badge in navbar — shows live used/limit with color coding',
+      'Quota widget in Playground with progress bar and 402 handling',
+      'GET /quota endpoint now reflects PENGU holder bonus (150/day vs 100/day)',
+      'localStorage persistence for onboarding step — no more resets on refresh',
+      'favicon.ico served correctly via Next.js App Router',
+      'Fixed Cloudflare-blocked fallback RPC for get_reputation_score',
+      'LIZY character logo in navbar and footer',
+    ],
+  },
+  {
     version: '0.1.0',
-    date: '2024-01-01',
+    date: '2026-04-01',
     type: 'release',
     changes: [
       'Initial release of LIZY MCP server',
