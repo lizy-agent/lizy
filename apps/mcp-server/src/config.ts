@@ -17,6 +17,7 @@ const envSchema = z.object({
   X402_FACILITATOR: z.string().url().default('https://facilitator.x402.abs.xyz'),
   MPP_ENDPOINT: z.string().url().default('https://mpp.abs.xyz'),
   USDC_E_ADDRESS: z.string().default('0xbd28Bd5A3Ef540d1582828CE2A1a657353008C61'),
+  PAYMENT_RECIPIENT: z.string().default('0x0000000000000000000000000000000000000000'),
 
   // Contracts
   IDENTITY_REGISTRY: z.string().default('0x8004A169FB4a3325136EB29fA0ceB6D2e539a432'),

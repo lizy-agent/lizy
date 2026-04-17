@@ -39,7 +39,7 @@ export function createX402Middleware(priceUsdc: number) {
               resource: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
               description: `LIZY Tool: ${req.path}`,
               mimeType: 'application/json',
-              payTo: config.USDC_E_ADDRESS,
+              payTo: config.PAYMENT_RECIPIENT,
               maxTimeoutSeconds: 300,
               asset: config.USDC_E_ADDRESS,
               extra: { facilitator: config.X402_FACILITATOR },
