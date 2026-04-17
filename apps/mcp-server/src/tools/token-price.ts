@@ -27,7 +27,7 @@ export const CACHE_TTL = {
 // Known DEX pools on Abstract Mainnet (verified on-chain addresses)
 const KNOWN_POOLS: Record<string, `0x${string}`> = {
   // USDC.e/WETH pool
-  [`2741:0xbd28Bd5A3Ef540d1582828CE2A1a657353008C61`]: '0x0000000000000000000000000000000000000000' as `0x${string}`,
+  [`2741:0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1`]: '0x0000000000000000000000000000000000000000' as `0x${string}`,
 };
 
 // USDC.e decimals = 6
@@ -178,11 +178,11 @@ export async function getTokenPrice(
 // Known cross-chain token mappings (verified on-chain bridge registries)
 const CROSS_CHAIN_MAP: Record<string, Record<number, `0x${string}`>> = {
   // USDC.e: Abstract ↔ Ethereum
-  '2741:0xbd28bd5a3ef540d1582828ce2a1a657353008c61': {
+  '2741:0x84a71ccd554cc1b02749b35d22f684cc8ec987e1': {
     1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as `0x${string}`,
   },
   '1:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': {
-    2741: '0xbd28Bd5A3Ef540d1582828CE2A1a657353008C61' as `0x${string}`,
+    2741: '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1' as `0x${string}`,
   },
 };
 
