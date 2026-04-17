@@ -28,8 +28,28 @@ export default function PlaygroundPage() {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [termsNeeded, setTermsNeeded] = useState(false);
+  const [agreeingTerms, setAgreeingTerms] = useState(false);
 
   const { address: walletAddress } = useAccount();
+
+  const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
+
+  const agreeToTerms = async () => {
+    if (!walletAddress) return;
+    setAgreeingTerms(true);
+    try {
+      await fetch(`${mcpUrl}/terms/agree`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Wallet-Address': walletAddress },
+        body: JSON.stringify({ version: 1 }),
+      });
+      setTermsNeeded(false);
+      await handleRun();
+    } finally {
+      setAgreeingTerms(false);
+    }
+  };
 
   const handleRun = async () => {
     if (!walletAddress) {
@@ -38,7 +58,6 @@ export default function PlaygroundPage() {
     }
     setLoading(true);
     try {
-      const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
       const res = await fetch(`${mcpUrl}/mcp`, {
         method: 'POST',
         headers: {
@@ -53,6 +72,12 @@ export default function PlaygroundPage() {
         }),
       });
       const data = await res.json();
+      if (data?.error?.code === -32603 && data?.error?.message?.includes('Terms')) {
+        setTermsNeeded(true);
+        setResult(null);
+        return;
+      }
+      setTermsNeeded(false);
       setResult(JSON.stringify(data, null, 2));
     } catch (err) {
       setResult(JSON.stringify({ error: String(err) }, null, 2));
@@ -144,6 +169,19 @@ export default function PlaygroundPage() {
             </div>
           </div>
         </div>
+
+        {termsNeeded && walletAddress && (
+          <div className="mt-6 glass rounded-xl p-4 border border-neon-green/30 text-sm text-center">
+            <p className="text-white mb-3">You need to agree to the Terms of Service before using LIZY tools.</p>
+            <button
+              onClick={agreeToTerms}
+              disabled={agreeingTerms}
+              className="px-6 py-2 rounded-xl bg-neon-green text-black font-semibold text-sm hover:bg-neon-green/90 disabled:opacity-50 transition-all"
+            >
+              {agreeingTerms ? 'Agreeing...' : 'Agree to Terms & Run'}
+            </button>
+          </div>
+        )}
 
         {!walletAddress && (
           <div className="mt-6 glass rounded-xl p-4 border border-yellow-500/20 text-sm text-yellow-400/80 text-center">
