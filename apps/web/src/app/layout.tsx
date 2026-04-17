@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     siteName: 'LIZY',
     title: 'LIZY — The data layer AI agents pay to use',
     description: 'On-chain data APIs for AI agents on Abstract Mainnet.',
-    images: [{ url: 'https://lizy.world/og.png', width: 1200, height: 630 }],
+    images: [{ url: 'https://lizy.world/lizy.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -48,7 +48,12 @@ export const metadata: Metadata = {
     creator: '@lizy_agent',
     title: 'LIZY — The data layer AI agents pay to use',
     description: 'On-chain data APIs for AI agents on Abstract Mainnet.',
-    images: ['https://lizy.world/og.png'],
+    images: ['https://lizy.world/lizy.png'],
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/lizy.png',
   },
   robots: { index: true, follow: true },
   metadataBase: new URL('https://lizy.world'),
