@@ -1,0 +1,41 @@
+{
+  "name": "lizy",
+  "version": "0.1.0",
+  "description": "The data layer AI agents pay to use.",
+  "homepage": "https://lizy.world",
+  "repository": "https://github.com/lizy-agent/lizy",
+  "mcp": {
+    "endpoint": "https://mcp.lizy.world/mcp",
+    "transport": "http",
+    "protocol": "2024-11-05",
+    "auth": {
+      "type": "wallet",
+      "header": "X-Wallet-Address",
+      "chain": "abstract",
+      "chainId": 2741
+    }
+  },
+  "payment": {
+    "methods": ["x402", "mpp"],
+    "token": "USDC.e",
+    "tokenAddress": "0xbd28Bd5A3Ef540d1582828CE2A1a657353008C61",
+    "chainId": 2741,
+    "facilitator": "https://facilitator.x402.abs.xyz",
+    "mppEndpoint": "https://mpp.abs.xyz",
+    "freeTier": {
+      "callsPerDay": 100,
+      "penguHolderBonus": 50,
+      "pudgyHolderDiscount": "50%"
+    }
+  },
+  "tools": [
+    { "name": "get_wallet_activity", "priceUsdc": 0.005 },
+    { "name": "get_reputation_score", "priceUsdc": 0.003 },
+    { "name": "get_identity_data", "priceUsdc": 0.002 },
+    { "name": "get_pudgy_metadata", "priceUsdc": 0.004 },
+    { "name": "verify_pudgy_holder", "priceUsdc": 0.002 },
+    { "name": "get_token_price", "priceUsdc": 0.003 },
+    { "name": "get_cross_chain_lookup", "priceUsdc": 0.005 },
+    { "name": "transform_data", "priceUsdc": 0.001 }
+  ]
+}
