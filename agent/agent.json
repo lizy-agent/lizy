@@ -18,7 +18,7 @@
   "payment": {
     "methods": ["x402", "mpp"],
     "token": "USDC.e",
-    "tokenAddress": "0xbd28Bd5A3Ef540d1582828CE2A1a657353008C61",
+    "tokenAddress": "0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1",
     "chainId": 2741,
     "facilitator": "https://facilitator.x402.abs.xyz",
     "mppEndpoint": "https://mpp.abs.xyz",
