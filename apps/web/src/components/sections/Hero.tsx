@@ -23,27 +23,29 @@ export function Hero() {
           transition={{ duration: 0.7 }}
           className="mb-8"
         >
-          {/* Outer glow ring */}
-          <div className="relative inline-block animate-float">
-            {/* Glow layers */}
-            <div className="absolute inset-0 rounded-full bg-neon-green/20 blur-[40px] scale-110" />
-            <div className="absolute inset-0 rounded-full bg-neon-green/10 blur-[80px] scale-150" />
+          {/* Static frame */}
+          <div className="relative inline-block">
+            {/* Glow layers (static) */}
+            <div className="absolute inset-0 rounded-2xl bg-neon-green/15 blur-[50px] scale-110" />
+            <div className="absolute inset-0 rounded-2xl bg-neon-green/8 blur-[100px] scale-150" />
 
-            {/* Frame border */}
-            <div className="relative rounded-full p-1 bg-gradient-to-br from-neon-green/60 via-neon-green/20 to-blue-500/40">
+            {/* Frame border (static) */}
+            <div className="relative rounded-2xl p-1 bg-gradient-to-br from-neon-green/60 via-neon-green/20 to-blue-500/40">
               {/* Inner dark ring */}
-              <div className="rounded-full p-1 bg-background">
-                {/* Image container */}
-                <div className="relative w-52 h-52 sm:w-64 sm:h-64 rounded-full overflow-hidden">
-                  <Image
-                    src="/lizy.png"
-                    alt="LIZY"
-                    fill
-                    className="object-cover object-top"
-                    priority
-                  />
+              <div className="rounded-xl p-1 bg-background">
+                {/* Image floats inside frame */}
+                <div className="relative w-52 h-64 sm:w-60 sm:h-72 rounded-xl overflow-hidden">
+                  <div className="animate-float absolute inset-0">
+                    <Image
+                      src="/lizy.png"
+                      alt="LIZY"
+                      fill
+                      className="object-cover object-top"
+                      priority
+                    />
+                  </div>
                   {/* Bottom vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent pointer-events-none" />
                 </div>
               </div>
             </div>
