@@ -127,7 +127,7 @@ export async function getReputationScore(
         functionName: 'getSummary',
         args: [address],
       }),
-    ),
+    ).catch(() => [0n, 0n, 0n, 0n]),
     withFallback(
       () => abstractClient.readContract({
         address: registryAddress,
@@ -141,7 +141,7 @@ export async function getReputationScore(
         functionName: 'readFeedback',
         args: [address, 0n, 10n],
       }),
-    ),
+    ).catch(() => []),
   ]);
 
   const [totalScore, positiveCount, negativeCount, neutralCount] = summary as [

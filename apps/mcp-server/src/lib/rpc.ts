@@ -109,7 +109,13 @@ async function jsonRpcFetch<T>(url: string, method: string, params: unknown[]): 
   });
 
   if (!res.ok) {
-    throw new Error(`RPC HTTP ${res.status}: ${await res.text()}`);
+    throw new Error(`HTTP request failed.\nStatus: ${res.status}\nURL: ${url}`);
+  }
+
+  const contentType = res.headers.get('content-type') ?? '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text();
+    throw new Error(`RPC returned non-JSON (likely bot-protection page): ${text.slice(0, 120)}`);
   }
 
   const json = (await res.json()) as { result?: T; error?: { message: string } };
