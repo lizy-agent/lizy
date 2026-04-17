@@ -38,6 +38,7 @@ import {
 } from '../tools/token-price';
 
 import { transformDataSchema, transformData, PRICE as TRANSFORM_PRICE } from '../tools/data-transform';
+import { getAcpJobSchema, listAcpJobsSchema, getAcpJob, listAcpJobs, PRICES as ACP_PRICES } from '../tools/acp';
 
 const router: ReturnType<typeof Router> = Router();
 
@@ -189,6 +190,19 @@ router.post(
   '/transform_data',
   buildToolMiddleware(TRANSFORM_PRICE),
   wrapTool(transformDataSchema, transformData, 'transform_data', TRANSFORM_PRICE),
+);
+
+// ── ACP (ERC-8183) Routes ─────────────────────────────────────────────────────
+router.post(
+  '/get_acp_job',
+  buildToolMiddleware(ACP_PRICES.get_acp_job),
+  wrapTool(getAcpJobSchema, getAcpJob, 'get_acp_job', ACP_PRICES.get_acp_job),
+);
+
+router.post(
+  '/list_acp_jobs',
+  buildToolMiddleware(ACP_PRICES.list_acp_jobs),
+  wrapTool(listAcpJobsSchema, listAcpJobs, 'list_acp_jobs', ACP_PRICES.list_acp_jobs),
 );
 
 export default router;

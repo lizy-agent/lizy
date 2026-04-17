@@ -15,6 +15,7 @@ import { PRICES as ORACLE_PRICES } from '../tools/onchain-oracle';
 import { PRICES as PUDGY_PRICES } from '../tools/pudgy-penguins';
 import { PRICES as TOKEN_PRICES } from '../tools/token-price';
 import { PRICE as TRANSFORM_PRICE } from '../tools/data-transform';
+import { PRICES as ACP_PRICES } from '../tools/acp';
 
 const router: ReturnType<typeof Router> = Router();
 
@@ -117,6 +118,30 @@ const MCP_TOOLS: McpToolDefinition[] = [
       required: ['operation', 'data'],
     },
   },
+  {
+    name: 'get_acp_job',
+    description: 'Read an ERC-8183 Agentic Commerce Protocol job from the on-chain ACP contract. Returns job state, parties, budget, and status.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'number', description: 'ACP job ID' },
+      },
+      required: ['jobId'],
+    },
+  },
+  {
+    name: 'list_acp_jobs',
+    description: 'List recent ACP jobs for a client or provider address. Returns job summaries with status and budget.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        address: { type: 'string', description: 'EVM wallet address (0x...)' },
+        role:    { type: 'string', enum: ['client', 'provider'], description: 'Filter by role (default: client)' },
+        limit:   { type: 'number', description: 'Max results (1-50, default 10)' },
+      },
+      required: ['address'],
+    },
+  },
 ];
 
 const TOOL_PRICES: Record<ToolName, number> = {
@@ -128,6 +153,8 @@ const TOOL_PRICES: Record<ToolName, number> = {
   get_token_price: TOKEN_PRICES.get_token_price,
   get_cross_chain_lookup: TOKEN_PRICES.get_cross_chain_lookup,
   transform_data: TRANSFORM_PRICE,
+  get_acp_job:    ACP_PRICES.get_acp_job,
+  list_acp_jobs:  ACP_PRICES.list_acp_jobs,
 };
 
 function jsonrpcError(id: string | number, code: number, message: string, data?: unknown): McpResponse {
@@ -193,8 +220,8 @@ router.post(
               'Content-Type': 'application/json',
               'x-wallet-address': req.walletAddress,
               ...(req.headers['x-wallet-signature'] ? { 'x-wallet-signature': req.headers['x-wallet-signature'] as string } : {}),
-              ...(req.headers['x-mpp-session-id'] ? { 'x-mpp-session-id': req.headers['x-mpp-session-id'] as string } : {}),
-              ...(req.headers['x-payment'] ? { 'x-payment': req.headers['x-payment'] as string } : {}),
+              ...(req.headers['authorization']       ? { 'authorization':       req.headers['authorization'] as string }       : {}),
+              ...(req.headers['x-payment']           ? { 'x-payment':           req.headers['x-payment'] as string }           : {}),
             },
             body: JSON.stringify(args ?? {}),
           });

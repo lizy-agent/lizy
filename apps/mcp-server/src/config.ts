@@ -16,7 +16,8 @@ const envSchema = z.object({
   // Payments
   X402_FACILITATOR: z.string().url().default('https://facilitator.x402.abs.xyz'),
   MPP_ENDPOINT: z.string().url().default('https://mpp.abs.xyz'),
-  USDC_E_ADDRESS: z.string().default('0xbd28Bd5A3Ef540d1582828CE2A1a657353008C61'),
+  // Mainnet USDC.e on Abstract (source: docs.abs.xyz)
+  USDC_E_ADDRESS: z.string().default('0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1'),
   PAYMENT_RECIPIENT: z.string().default('0x0000000000000000000000000000000000000000'),
 
   // Contracts
@@ -24,6 +25,8 @@ const envSchema = z.object({
   REPUTATION_REGISTRY: z.string().default('0x8004BAa17C55a88189AE136b182e5fdA19dE9b63'),
   PUDGY_PENGUINS: z.string().default('0xBd3531dA5CF5857e7CfAA92426877b022e612cf8'),
   PENGU_TOKEN: z.string().default('0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95'),
+  // ERC-8183 Agentic Commerce Protocol contract (Abstract Mainnet)
+  ACP_CONTRACT: z.string().default(''),
 
   // Supabase
   SUPABASE_URL: z.string().url(),

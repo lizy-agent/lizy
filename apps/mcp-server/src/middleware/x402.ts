@@ -34,7 +34,7 @@ export function createX402Middleware(priceUsdc: number) {
           details: {
             x402: {
               scheme: 'exact',
-              network: `abstract-${config.ABSTRACT_CHAIN_ID}`,
+              network: `eip155:${config.ABSTRACT_CHAIN_ID}`,
               maxAmountRequired: priceInMicro.toString(),
               resource: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
               description: `LIZY Tool: ${req.path}`,

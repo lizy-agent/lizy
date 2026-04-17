@@ -11,6 +11,7 @@ import { walletActivitySchema, reputationScoreSchema, identityDataSchema, getWal
 import { pudgyMetadataSchema, verifyPudgyHolderSchema, getPudgyMetadata, verifyPudgyHolder } from '../tools/pudgy-penguins';
 import { tokenPriceSchema, crossChainLookupSchema, getTokenPrice, getCrossChainLookup } from '../tools/token-price';
 import { transformDataSchema, transformData } from '../tools/data-transform';
+import { getAcpJobSchema, listAcpJobsSchema, getAcpJob, listAcpJobs } from '../tools/acp';
 import { z } from 'zod';
 
 const router: ReturnType<typeof Router> = Router();
@@ -42,6 +43,8 @@ const TOOLS: Record<string, { schema: z.ZodTypeAny; fn: (input: any) => Promise<
   get_token_price:        { schema: tokenPriceSchema,        fn: getTokenPrice },
   get_cross_chain_lookup: { schema: crossChainLookupSchema,  fn: getCrossChainLookup },
   transform_data:         { schema: transformDataSchema,     fn: transformData },
+  get_acp_job:            { schema: getAcpJobSchema,         fn: getAcpJob },
+  list_acp_jobs:          { schema: listAcpJobsSchema,       fn: listAcpJobs },
 };
 
 router.post(

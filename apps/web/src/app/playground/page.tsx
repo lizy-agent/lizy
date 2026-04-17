@@ -15,6 +15,8 @@ const TOOL_DEFAULTS: Record<string, object> = {
   get_token_price:        { tokenAddress: '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95', chainId: 2741 },
   get_cross_chain_lookup: { tokenAddress: '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95', sourceChainId: 2741, targetChainId: 1 },
   transform_data:         { operation: 'sha256', data: 'hello lizy' },
+  get_acp_job:            { jobId: 1 },
+  list_acp_jobs:          { address: ADDR, role: 'client', limit: 10 },
 };
 
 const EXAMPLE_CALLS = [

@@ -62,6 +62,20 @@ const TOOLS_DOCS = [
     output: '{ operation, result, valid?, error? }',
     description: 'CPU-only transforms: json_to_csv, csv_to_json, sha256, keccak256, validate_address, validate_json.',
   },
+  {
+    name: 'get_acp_job',
+    price: '$0.002',
+    input: '{ jobId: number }',
+    output: '{ id, client, provider, evaluator, description, budgetUsdc, expiredAt, status, statusCode, hook }',
+    description: 'Read an ERC-8183 Agentic Commerce Protocol job by ID. Status: Open→Funded→Submitted→Completed/Rejected/Expired.',
+  },
+  {
+    name: 'list_acp_jobs',
+    price: '$0.003',
+    input: '{ address: string, role?: "client"|"provider", limit?: number }',
+    output: '{ address, role, jobs[], total }',
+    description: 'List recent ACP jobs for a wallet address filtered by role (client or provider). Scans up to 200 recent jobs.',
+  },
 ];
 
 export default function DocsPage() {
@@ -138,8 +152,8 @@ Content-Type: application/json`}
               <p className="text-xs text-muted-foreground">Sign an ERC-3009 <code className="font-mono text-neon-green">TransferWithAuthorization</code> for each request. No session needed. Verified on-chain by the Abstract facilitator.</p>
             </div>
             <div className="glass rounded-xl p-4">
-              <div className="font-semibold text-white mb-1">MPP — Session Billing</div>
-              <p className="text-xs text-muted-foreground">Open a payment session with MPP, then pass <code className="font-mono text-neon-green">X-Mpp-Session-Id</code>. Calls are streamed off-chain against your session balance.</p>
+              <div className="font-semibold text-white mb-1">MPP — Charge or Session</div>
+              <p className="text-xs text-muted-foreground">Pass <code className="font-mono text-neon-green">Authorization: Payment &lt;base64&gt;</code>. Charge mode: one ERC-3009 sig per call. Session mode: on-chain escrow channel + off-chain vouchers.</p>
             </div>
           </div>
 
@@ -162,10 +176,10 @@ Content-Type: application/json`}
     "details": {
       "x402": {
         "scheme": "exact",
-        "network": "abstract-2741",
+        "network": "eip155:2741",         // Abstract Mainnet
         "maxAmountRequired": "5000",      // in USDC micro-units (6 decimals)
         "payTo": "0x<LIZY_RECIPIENT>",
-        "asset":  "0x<USDC_E_CONTRACT>",  // USDC.e on Abstract Mainnet
+        "asset":  "0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1",  // USDC.e mainnet
         "maxTimeoutSeconds": 300,
         "extra": { "facilitator": "https://facilitator.x402.abs.xyz" }
       }
@@ -264,35 +278,39 @@ async function callWithPayment(toolName: string, args: object) {
           </pre>
 
           {/* MPP */}
-          <h3 className="text-base font-semibold text-white mb-3">MPP Session Flow</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Open an MPP session once, then reuse the session ID across many calls without re-signing each time. Ideal for agents making many sequential tool calls.
+          <h3 className="text-base font-semibold text-white mb-3">MPP Payment Flow</h3>
+          <p className="text-sm text-muted-foreground mb-2">
+            MPP uses <code className="font-mono text-neon-green">Authorization: Payment &lt;base64&gt;</code> header. Two modes:
           </p>
+          <ul className="text-xs text-muted-foreground space-y-1 mb-4 list-disc list-inside">
+            <li><strong className="text-white">Charge</strong> — single ERC-3009 authorization per request (no channel setup needed)</li>
+            <li><strong className="text-white">Session</strong> — on-chain escrow channel + off-chain cumulative vouchers for repeated calls</li>
+          </ul>
           <pre className="glass rounded-lg p-4 font-mono text-xs text-neon-green overflow-x-auto mb-4">
-{`// 1. Open MPP session (deposit USDC.e against a session)
-const session = await fetch('https://mpp.abs.xyz/session', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    walletAddress: WALLET,
-    amountUsdc: 1.00,   // pre-fund 1 USDC.e
-    chainId: 2741,
-  }),
-}).then(r => r.json());
+{`// MPP Charge: sign ERC-3009 and wrap in Authorization header
+// (same TransferWithAuthorization structure as x402, different header)
+const payment = btoa(JSON.stringify({
+  scheme: 'mpp-charge',
+  payload: {
+    signature,
+    authorization: { from: WALLET, to: payTo, value, validAfter, validBefore, nonce },
+  },
+}));
 
-const sessionId = session.sessionId;  // keep this
-
-// 2. Call LIZY with session header
 const res = await fetch(\`\${MCP_URL}/mcp\`, {
   method: 'POST',
   headers: {
     'Content-Type':     'application/json',
     'X-Wallet-Address':  WALLET,
-    'X-Mpp-Session-Id':  sessionId,
+    'Authorization':    \`Payment \${payment}\`,   // MPP header
   },
   body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call',
     params: { name: 'get_wallet_activity', arguments: { address: WALLET } } }),
-});`}
+});
+
+// MPP Session: open channel on escrow contract, then send vouchers
+// Escrow contract (Abstract Mainnet): 0x29635C384f451a72ED2e2a312BCeb8b0bDC0923c
+// USDC.e (Abstract Mainnet):          0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1`}
           </pre>
 
           {/* Pudgy discount */}
