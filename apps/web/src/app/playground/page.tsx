@@ -4,6 +4,19 @@ import { useState } from 'react';
 import { Play, Copy, Check } from 'lucide-react';
 import { useAccount } from 'wagmi';
 
+const ADDR = '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432';
+
+const TOOL_DEFAULTS: Record<string, object> = {
+  get_wallet_activity:    { address: ADDR, limit: 10 },
+  get_reputation_score:   { address: ADDR },
+  get_identity_data:      { address: ADDR },
+  get_pudgy_metadata:     { address: ADDR },
+  verify_pudgy_holder:    { address: ADDR },
+  get_token_price:        { tokenAddress: '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95', chainId: 2741 },
+  get_cross_chain_lookup: { address: ADDR },
+  transform_data:         { operation: 'sha256', data: 'hello lizy' },
+};
+
 const EXAMPLE_CALLS = [
   {
     label: 'Transform Data (sha256)',
@@ -12,12 +25,12 @@ const EXAMPLE_CALLS = [
   },
   {
     label: 'Validate Address',
-    body: JSON.stringify({ operation: 'validate_address', data: '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432' }, null, 2),
+    body: JSON.stringify({ operation: 'validate_address', data: ADDR }, null, 2),
     tool: 'transform_data',
   },
   {
     label: 'Reputation Score',
-    body: JSON.stringify({ address: '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432' }, null, 2),
+    body: JSON.stringify({ address: ADDR }, null, 2),
     tool: 'get_reputation_score',
   },
 ];
@@ -119,7 +132,12 @@ export default function PlaygroundPage() {
               <label className="block text-xs text-muted-foreground mb-2">Tool Name</label>
               <select
                 value={tool}
-                onChange={(e) => setTool(e.target.value)}
+                onChange={(e) => {
+                  const t = e.target.value;
+                  setTool(t);
+                  setBody(JSON.stringify(TOOL_DEFAULTS[t] ?? {}, null, 2));
+                  setResult(null);
+                }}
                 className="w-full glass rounded-xl p-3 text-sm text-white bg-transparent border border-white/10 focus:border-neon-green/50 outline-none font-mono"
               >
                 {['get_wallet_activity', 'get_reputation_score', 'get_identity_data', 'get_pudgy_metadata', 'verify_pudgy_holder', 'get_token_price', 'get_cross_chain_lookup', 'transform_data'].map((t) => (
