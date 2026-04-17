@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Zap } from 'lucide-react';
 import { useAccount } from 'wagmi';
+import { useLoginWithAbstract } from '@abstract-foundation/agw-react';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
@@ -113,13 +114,26 @@ export function Navbar() {
 
 function ConnectButton() {
   const { address } = useAccount();
+  const { login, logout } = useLoginWithAbstract();
 
-  if (!address) return null;
+  if (!address) {
+    return (
+      <button
+        onClick={login}
+        className="px-3 py-1.5 rounded-lg glass text-sm text-muted-foreground hover:text-white hover:border-neon-green/30 transition-all"
+      >
+        Connect Wallet
+      </button>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-sm text-muted-foreground">
+    <button
+      onClick={logout}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-sm text-muted-foreground hover:text-white transition-all"
+    >
       <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
       {`${address.slice(0, 6)}...${address.slice(-4)}`}
-    </div>
+    </button>
   );
 }

@@ -21,6 +21,8 @@ const abstractMainnet = {
   },
 } as const satisfies Chain;
 
+export { abstractMainnet };
+
 export const wagmiConfig = createConfig({
   chains: [abstractMainnet, mainnet],
   transports: {
