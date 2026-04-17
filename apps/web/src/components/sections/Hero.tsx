@@ -34,8 +34,9 @@ export function Hero() {
               {/* Inner dark ring */}
               <div className="rounded-xl p-1 bg-background">
                 {/* Image floats inside frame */}
-                <div className="relative w-40 h-48 sm:w-44 sm:h-52 rounded-xl overflow-hidden">
-                  <div className="animate-float absolute inset-0">
+                <div className="relative w-52 h-60 sm:w-60 sm:h-72 rounded-xl overflow-hidden">
+                  {/* Image is taller than container so bottom crop is clipped out */}
+                  <div className="animate-float absolute inset-x-0 top-0 h-[140%]">
                     <Image
                       src="/lizy.png"
                       alt="LIZY"
@@ -44,8 +45,8 @@ export function Hero() {
                       priority
                     />
                   </div>
-                  {/* Bottom vignette — hides crop */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent pointer-events-none" />
+                  {/* Bottom fade — fully covers the fade-out area */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-background to-transparent pointer-events-none" />
                 </div>
               </div>
             </div>
