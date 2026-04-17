@@ -7,6 +7,7 @@ import toolsRouter from './routes/tools';
 import mcpRouter from './routes/mcp';
 import adminRouter from './routes/admin';
 import playgroundRouter from './routes/playground';
+import a2aRouter from './routes/a2a';
 
 const ALLOWED_ORIGINS = [
   'https://lizy.world',
@@ -31,6 +32,9 @@ export function createApp(): express.Application {
       },
     },
   }));
+
+  // A2A discovery endpoints must be publicly accessible (no CORS restriction)
+  app.use('/.well-known', cors({ origin: '*', methods: ['GET', 'OPTIONS'] }));
 
   app.use(cors({
     origin: (origin, cb) => {
@@ -66,6 +70,7 @@ export function createApp(): express.Application {
 
   // Routes
   app.use('/', healthRouter);
+  app.use('/', a2aRouter);
   app.use('/tools', toolsRouter);
   app.use('/', mcpRouter);
   app.use('/', playgroundRouter);
