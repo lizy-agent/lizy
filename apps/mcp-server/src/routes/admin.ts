@@ -3,7 +3,7 @@ import { config } from '../config';
 import { getSupabase } from '../lib/supabase';
 import { getRedis } from '../lib/redis';
 
-const router = Router();
+const router: ReturnType<typeof Router> = Router();
 
 function requireAdmin(req: Request, res: Response, next: NextFunction): void {
   const secret = req.headers['x-admin-secret'];

@@ -3,7 +3,7 @@ import { getRedis } from '../lib/redis';
 import { getSupabase } from '../lib/supabase';
 import { abstractRpcCall } from '../lib/rpc';
 
-const router = Router();
+const router: ReturnType<typeof Router> = Router();
 
 router.get('/health', async (_req, res) => {
   const checks: Record<string, 'ok' | 'error'> = {};
@@ -18,7 +18,7 @@ router.get('/health', async (_req, res) => {
       .then(() => { checks.redis = 'ok'; })
       .catch(() => { checks.redis = 'error'; }),
 
-    getSupabase().from('users').select('id').limit(1)
+    Promise.resolve(getSupabase().from('users').select('id').limit(1))
       .then(() => { checks.supabase = 'ok'; })
       .catch(() => { checks.supabase = 'error'; }),
   ]);

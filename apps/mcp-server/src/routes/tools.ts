@@ -40,7 +40,7 @@ import {
 
 import { transformDataSchema, transformData, PRICE as TRANSFORM_PRICE } from '../tools/data-transform';
 
-const router = Router();
+const router: ReturnType<typeof Router> = Router();
 
 // Shared middleware chain (applied to all tool routes)
 const sharedMiddleware = [

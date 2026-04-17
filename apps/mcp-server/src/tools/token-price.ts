@@ -143,7 +143,7 @@ export async function getTokenPrice(
         ),
       ]);
 
-      const [sqrtPriceX96] = slot0Data as [bigint, ...unknown[]];
+      const [sqrtPriceX96] = slot0Data as unknown as [bigint, ...unknown[]];
       const isToken0 = (token0Addr as string).toLowerCase() === tokenAddress;
 
       const quoteDecimals = quoteToken === config.USDC_E_ADDRESS.toLowerCase() ? USDC_E_DECIMALS : 18;

@@ -16,7 +16,7 @@ import { PRICES as PUDGY_PRICES } from '../tools/pudgy-penguins';
 import { PRICES as TOKEN_PRICES } from '../tools/token-price';
 import { PRICE as TRANSFORM_PRICE } from '../tools/data-transform';
 
-const router = Router();
+const router: ReturnType<typeof Router> = Router();
 
 const MCP_TOOLS: McpToolDefinition[] = [
   {

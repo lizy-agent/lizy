@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@abstract-foundation/agw-react": "^0.2.0",
+    "@abstract-foundation/agw-react": "^1.0.0",
     "@lizy/types": "workspace:*",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-dialog": "^1.1.4",

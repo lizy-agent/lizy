@@ -116,7 +116,7 @@ export function Hero() {
                   <span className="text-white">{'  '}</span>
                   <span className="text-neon-green">name</span>
                   <span className="text-white">: </span>
-                  <span className="text-orange-400">"get_wallet_activity"</span>
+                  <span className="text-orange-400">{'"get_wallet_activity"'}</span>
                   <span className="text-white">,</span>
                   {'\n'}
                   <span className="text-white">{'  '}</span>
@@ -124,13 +124,13 @@ export function Hero() {
                   <span className="text-white">: {'{'}</span>
                   <span className="text-neon-green"> address</span>
                   <span className="text-white">: </span>
-                  <span className="text-orange-400">"0xABC..."</span>
+                  <span className="text-orange-400">{'"0xABC..."'}</span>
                   <span className="text-white"> {'}'}</span>
                   {'\n'}
                   <span className="text-white">{'}'}</span>
                   <span className="text-white">)</span>
                   {'\n'}
-                  <span className="text-muted-foreground">// Paid $0.005 USDC.e via x402</span>
+                  <span className="text-muted-foreground">{'// Paid $0.005 USDC.e via x402'}</span>
                 </code>
               </pre>
             </div>

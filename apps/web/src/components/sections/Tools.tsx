@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Activity, Star, TrendingUp, Code2, Shield, Search, ArrowLeftRight, Hash } from 'lucide-react';
+import { Activity, Star, TrendingUp, Shield, Search, ArrowLeftRight, Hash } from 'lucide-react';
 
 const TOOLS = [
   {
