@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Play, Copy, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Copy, Check, Zap } from 'lucide-react';
 import { useAccount } from 'wagmi';
 
 const ADDR = '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432';
@@ -35,6 +35,12 @@ const EXAMPLE_CALLS = [
   },
 ];
 
+interface QuotaState {
+  used: number;
+  limit: number;
+  remaining: number;
+}
+
 export default function PlaygroundPage() {
   const [tool, setTool] = useState('transform_data');
   const [body, setBody] = useState(EXAMPLE_CALLS[0].body);
@@ -43,10 +49,26 @@ export default function PlaygroundPage() {
   const [copied, setCopied] = useState(false);
   const [termsNeeded, setTermsNeeded] = useState(false);
   const [agreeingTerms, setAgreeingTerms] = useState(false);
+  const [quota, setQuota] = useState<QuotaState | null>(null);
+  const [quotaExhausted, setQuotaExhausted] = useState(false);
 
   const { address: walletAddress } = useAccount();
-
   const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
+
+  useEffect(() => {
+    if (!walletAddress) { setQuota(null); return; }
+    const fetchQuota = async () => {
+      try {
+        const res = await fetch(`${mcpUrl}/quota`, { headers: { 'X-Wallet-Address': walletAddress } });
+        if (!res.ok) return;
+        const data = await res.json() as { ok: boolean; quotaUsed: number; quotaLimit: number; quotaRemaining: number };
+        if (data.ok) setQuota({ used: data.quotaUsed, limit: data.quotaLimit, remaining: data.quotaRemaining });
+      } catch { /* non-fatal */ }
+    };
+    fetchQuota();
+    const id = setInterval(fetchQuota, 30_000);
+    return () => clearInterval(id);
+  }, [walletAddress, mcpUrl]);
 
   const agreeToTerms = async () => {
     if (!walletAddress) return;
@@ -70,13 +92,11 @@ export default function PlaygroundPage() {
       return;
     }
     setLoading(true);
+    setQuotaExhausted(false);
     try {
       const res = await fetch(`${mcpUrl}/mcp`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Wallet-Address': walletAddress,
-        },
+        headers: { 'Content-Type': 'application/json', 'X-Wallet-Address': walletAddress },
         body: JSON.stringify({
           jsonrpc: '2.0',
           id: 1,
@@ -84,13 +104,40 @@ export default function PlaygroundPage() {
           params: { name: tool, arguments: JSON.parse(body) },
         }),
       });
-      const data = await res.json();
+      const data = await res.json() as {
+        error?: { code: number; message: string; data?: { x402?: unknown } };
+        result?: { content?: Array<{ text: string }> };
+      };
+
       if (data?.error?.code === -32603 && data?.error?.message?.includes('Terms')) {
         setTermsNeeded(true);
         setResult(null);
         return;
       }
+
+      if (res.status === 402 || data?.error?.data?.x402) {
+        setQuotaExhausted(true);
+        setResult(JSON.stringify(data, null, 2));
+        // Refresh quota display
+        const qRes = await fetch(`${mcpUrl}/quota`, { headers: { 'X-Wallet-Address': walletAddress } });
+        const qData = await qRes.json() as { ok: boolean; quotaUsed: number; quotaLimit: number; quotaRemaining: number };
+        if (qData.ok) setQuota({ used: qData.quotaUsed, limit: qData.quotaLimit, remaining: qData.quotaRemaining });
+        return;
+      }
+
       setTermsNeeded(false);
+
+      // Parse quotaRemaining from tool response content
+      if (data?.result?.content?.[0]?.text) {
+        try {
+          const inner = JSON.parse(data.result.content[0].text) as { meta?: { quotaRemaining?: number } };
+          if (inner?.meta?.quotaRemaining !== undefined && quota) {
+            const newUsed = quota.limit - inner.meta.quotaRemaining;
+            setQuota({ used: newUsed, limit: quota.limit, remaining: inner.meta.quotaRemaining });
+          }
+        } catch { /* non-fatal */ }
+      }
+
       setResult(JSON.stringify(data, null, 2));
     } catch (err) {
       setResult(JSON.stringify({ error: String(err) }, null, 2));
@@ -106,14 +153,40 @@ export default function PlaygroundPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const quotaPct = quota ? quota.used / quota.limit : 0;
+  const quotaColor = quotaPct >= 0.9 ? 'text-red-400' : quotaPct >= 0.6 ? 'text-yellow-400' : 'text-neon-green';
+  const quotaBarColor = quotaPct >= 0.9 ? 'bg-red-400' : quotaPct >= 0.6 ? 'bg-yellow-400' : 'bg-neon-green';
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="font-display text-4xl font-bold text-white mb-3">Playground</h1>
-        <p className="text-muted-foreground mb-8">Test LIZY tools interactively. Connect your wallet to use the live server.</p>
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <h1 className="font-display text-4xl font-bold text-white mb-1">Playground</h1>
+            <p className="text-muted-foreground">Test LIZY tools interactively. Connect your wallet to use the live server.</p>
+          </div>
+          {quota && walletAddress && (
+            <div className="glass rounded-xl p-3 text-right min-w-[120px]">
+              <div className="flex items-center justify-end gap-1.5 mb-1">
+                <Zap className="w-3 h-3 text-neon-green" />
+                <span className="text-xs text-muted-foreground">Daily Quota</span>
+              </div>
+              <div className={`font-display text-xl font-bold ${quotaColor}`}>
+                {quota.remaining}<span className="text-sm font-normal text-muted-foreground">/{quota.limit}</span>
+              </div>
+              <div className="w-full h-1 bg-white/10 rounded-full mt-1.5 overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all ${quotaBarColor}`}
+                  style={{ width: `${Math.max(2, (quota.remaining / quota.limit) * 100)}%` }}
+                />
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">remaining</div>
+            </div>
+          )}
+        </div>
 
         {/* Examples */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6 mt-6">
           {EXAMPLE_CALLS.map((ex) => (
             <button
               key={ex.label}
@@ -140,7 +213,7 @@ export default function PlaygroundPage() {
                 }}
                 className="w-full glass rounded-xl p-3 text-sm text-white bg-transparent border border-white/10 focus:border-neon-green/50 outline-none font-mono"
               >
-                {['get_wallet_activity', 'get_reputation_score', 'get_identity_data', 'get_pudgy_metadata', 'verify_pudgy_holder', 'get_token_price', 'get_cross_chain_lookup', 'transform_data'].map((t) => (
+                {Object.keys(TOOL_DEFAULTS).map((t) => (
                   <option key={t} value={t} className="bg-gray-900">{t}</option>
                 ))}
               </select>
@@ -178,7 +251,7 @@ export default function PlaygroundPage() {
             </div>
             <div className="glass rounded-xl p-4 h-[340px] overflow-auto">
               {result ? (
-                <pre className="text-xs font-mono text-neon-green whitespace-pre-wrap">{result}</pre>
+                <pre className={`text-xs font-mono whitespace-pre-wrap ${quotaExhausted ? 'text-yellow-400' : 'text-neon-green'}`}>{result}</pre>
               ) : (
                 <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
                   Response will appear here
@@ -198,6 +271,16 @@ export default function PlaygroundPage() {
             >
               {agreeingTerms ? 'Agreeing...' : 'Agree to Terms & Run'}
             </button>
+          </div>
+        )}
+
+        {quotaExhausted && (
+          <div className="mt-6 glass rounded-xl p-4 border border-yellow-500/30 text-sm">
+            <p className="text-yellow-400 font-semibold mb-1">Free quota exhausted</p>
+            <p className="text-muted-foreground text-xs">
+              You&apos;ve used all {quota?.limit} daily free calls. Calls beyond the free tier require x402 or MPP payment.
+              Quota resets at UTC midnight.
+            </p>
           </div>
         )}
 

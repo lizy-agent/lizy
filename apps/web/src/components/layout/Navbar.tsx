@@ -57,6 +57,7 @@ export function Navbar() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
+            <QuotaBadge />
             <ConnectButton />
             <Link
               href="/start"
@@ -135,5 +136,43 @@ function ConnectButton() {
       <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
       {`${address.slice(0, 6)}...${address.slice(-4)}`}
     </button>
+  );
+}
+
+function QuotaBadge() {
+  const { address } = useAccount();
+  const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
+  const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
+
+  useEffect(() => {
+    if (!address) { setQuota(null); return; }
+
+    const fetchQuota = async () => {
+      try {
+        const res = await fetch(`${mcpUrl}/quota`, {
+          headers: { 'X-Wallet-Address': address },
+        });
+        if (!res.ok) return;
+        const data = await res.json() as { ok: boolean; quotaUsed: number; quotaLimit: number };
+        if (data.ok) setQuota({ used: data.quotaUsed, limit: data.quotaLimit });
+      } catch {
+        // non-fatal
+      }
+    };
+
+    fetchQuota();
+    const interval = setInterval(fetchQuota, 30_000);
+    return () => clearInterval(interval);
+  }, [address, mcpUrl]);
+
+  if (!address || quota === null) return null;
+
+  const pct = quota.used / quota.limit;
+  const color = pct >= 0.9 ? 'text-red-400 border-red-400/30' : pct >= 0.6 ? 'text-yellow-400 border-yellow-400/30' : 'text-neon-green border-neon-green/30';
+
+  return (
+    <div className={`px-2.5 py-1 rounded-lg glass border text-xs font-mono ${color}`}>
+      {quota.used}/{quota.limit}
+    </div>
   );
 }

@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { getRedis } from '../lib/redis';
+import { getRedis, quotaGet } from '../lib/redis';
 import { getSupabase } from '../lib/supabase';
 import { abstractRpcCall } from '../lib/rpc';
+import { config } from '../config';
 
 const router: ReturnType<typeof Router> = Router();
 
@@ -34,6 +35,29 @@ router.get('/health', async (_req, res) => {
 
 router.get('/ping', (_req, res) => {
   res.json({ ok: true, ts: new Date().toISOString() });
+});
+
+router.get('/quota', async (req, res) => {
+  const walletAddress = (req.headers['x-wallet-address'] as string | undefined)?.toLowerCase();
+  if (!walletAddress || !/^0x[0-9a-f]{40}$/.test(walletAddress)) {
+    res.status(400).json({ ok: false, error: 'Missing or invalid X-Wallet-Address header' });
+    return;
+  }
+
+  const date = new Date().toISOString().slice(0, 10);
+  const used = await quotaGet(walletAddress, date).catch(() => 0);
+
+  // Reset is always at next UTC midnight
+  const now = new Date();
+  const resetAt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1)).toISOString();
+
+  res.json({
+    ok: true,
+    quotaUsed: used,
+    quotaLimit: config.FREE_QUOTA_DEFAULT,
+    quotaRemaining: Math.max(0, config.FREE_QUOTA_DEFAULT - used),
+    resetAt,
+  });
 });
 
 export default router;
