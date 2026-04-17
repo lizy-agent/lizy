@@ -7,13 +7,13 @@ import { useAccount } from 'wagmi';
 const ADDR = '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432';
 
 const TOOL_DEFAULTS: Record<string, object> = {
-  get_wallet_activity:    { address: ADDR, limit: 10 },
+  get_wallet_activity:    { address: ADDR, blockRange: 1000 },
   get_reputation_score:   { address: ADDR },
   get_identity_data:      { address: ADDR },
-  get_pudgy_metadata:     { address: ADDR },
+  get_pudgy_metadata:     { tokenId: 1 },
   verify_pudgy_holder:    { address: ADDR },
   get_token_price:        { tokenAddress: '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95', chainId: 2741 },
-  get_cross_chain_lookup: { address: ADDR },
+  get_cross_chain_lookup: { tokenAddress: '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95', sourceChainId: 2741, targetChainId: 1 },
   transform_data:         { operation: 'sha256', data: 'hello lizy' },
 };
 
