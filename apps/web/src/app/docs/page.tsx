@@ -129,7 +129,7 @@ Content-Type: application/json`}
         <section className="glass rounded-2xl p-8 mb-8">
           <h2 className="font-display text-2xl font-bold text-white mb-4">Payment</h2>
           <div className="space-y-3 text-sm text-muted-foreground">
-            <p>First 100 calls/day are free (150 for PENGU holders). After that:</p>
+            <p>Every call is paid via x402 or MPP. Pudgy Penguin holders get 50% off automatically.</p>
             <div className="grid grid-cols-2 gap-4">
               <div className="glass rounded-xl p-4">
                 <div className="font-semibold text-white mb-2">x402</div>

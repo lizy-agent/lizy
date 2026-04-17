@@ -189,8 +189,8 @@ export default function StartPage() {
                 <h2 className="font-display text-2xl font-bold text-white mb-6 text-center">Choose Your Plan</h2>
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { id: 'free' as const, label: 'Free Tier', desc: '100 calls/day, no payment needed' },
-                    { id: 'pay-per-use' as const, label: 'Pay Per Use', desc: 'Unlimited via x402 or MPP' },
+                    { id: 'pay-per-use' as const, label: 'x402 Pay Per Call', desc: 'Single-call USDC.e micropayments' },
+                    { id: 'free' as const, label: 'MPP Session', desc: 'Open a session, stream off-chain payments' },
                   ].map((plan) => (
                     <button
                       key={plan.id}

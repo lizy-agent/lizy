@@ -94,7 +94,7 @@ export function Hero() {
         >
           {[
             { icon: Zap, label: '8 Tools' },
-            { icon: Shield, label: '100 Free/day' },
+            { icon: Shield, label: 'Pudgy 50% off' },
             { icon: Globe, label: 'x402 + MPP' },
           ].map(({ icon: Icon, label }) => (
             <div key={label} className="flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs text-muted-foreground border border-white/5">

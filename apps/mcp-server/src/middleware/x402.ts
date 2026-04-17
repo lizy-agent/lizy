@@ -13,7 +13,7 @@ declare global {
 export function createX402Middleware(priceUsdc: number) {
   return async function x402(req: Request, res: Response, next: NextFunction): Promise<void> {
     // If already paid via MPP or free quota used, skip x402
-    if (req.mppCharged || req.usedFreeQuota) {
+    if (req.mppCharged) {
       next();
       return;
     }

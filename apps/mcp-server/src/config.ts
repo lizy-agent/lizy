@@ -43,9 +43,7 @@ const envSchema = z.object({
   // Terms
   TERMS_VERSION: z.coerce.number().default(1),
 
-  // Quota
-  FREE_QUOTA_DEFAULT: z.coerce.number().default(100),
-  FREE_QUOTA_PENGU_HOLDER: z.coerce.number().default(150),
+
 });
 
 function loadConfig() {
