@@ -113,42 +113,34 @@ export async function getReputationScore(
 
   const registryAddress = config.REPUTATION_REGISTRY as `0x${string}`;
 
+  // readFeedback reverts when the address has no data — treat any revert as "no data"
+  const safeRead = async <T>(fn: () => Promise<T>, fallbackValue: T): Promise<T> => {
+    try { return await fn(); } catch { return fallbackValue; }
+  };
+
   const [summary, feedback] = await Promise.all([
-    withFallback(
-      () => abstractClient.readContract({
-        address: registryAddress,
-        abi: REPUTATION_REGISTRY_ABI,
-        functionName: 'getSummary',
-        args: [address],
-      }),
-      () => abstractClientFallback.readContract({
-        address: registryAddress,
-        abi: REPUTATION_REGISTRY_ABI,
-        functionName: 'getSummary',
-        args: [address],
-      }),
+    safeRead(
+      () => withFallback(
+        () => abstractClient.readContract({ address: registryAddress, abi: REPUTATION_REGISTRY_ABI, functionName: 'getSummary', args: [address] }),
+        () => abstractClientFallback.readContract({ address: registryAddress, abi: REPUTATION_REGISTRY_ABI, functionName: 'getSummary', args: [address] }),
+      ) as Promise<unknown>,
+      [0n, 0n, 0n, 0n],
     ),
-    withFallback(
-      () => abstractClient.readContract({
-        address: registryAddress,
-        abi: REPUTATION_REGISTRY_ABI,
-        functionName: 'readFeedback',
-        args: [address, 0n, 10n],
-      }),
-      () => abstractClientFallback.readContract({
-        address: registryAddress,
-        abi: REPUTATION_REGISTRY_ABI,
-        functionName: 'readFeedback',
-        args: [address, 0n, 10n],
-      }),
+    safeRead(
+      () => withFallback(
+        () => abstractClient.readContract({ address: registryAddress, abi: REPUTATION_REGISTRY_ABI, functionName: 'readFeedback', args: [address, 0n, 10n] }),
+        () => abstractClientFallback.readContract({ address: registryAddress, abi: REPUTATION_REGISTRY_ABI, functionName: 'readFeedback', args: [address, 0n, 10n] }),
+      ) as Promise<unknown>,
+      [],
     ),
   ]);
 
-  const [totalScore, positiveCount, negativeCount, neutralCount] = summary as [
-    bigint,
-    bigint,
-    bigint,
-    bigint,
+  const summaryArr = (Array.isArray(summary) ? summary : [0n, 0n, 0n, 0n]) as bigint[];
+  const [totalScore, positiveCount, negativeCount, neutralCount] = [
+    summaryArr[0] ?? 0n,
+    summaryArr[1] ?? 0n,
+    summaryArr[2] ?? 0n,
+    summaryArr[3] ?? 0n,
   ];
 
   const feedbackEntries = (feedback as Array<{

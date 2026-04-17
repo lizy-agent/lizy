@@ -5,6 +5,7 @@
   "description": "The data layer AI agents pay to use.",
   "scripts": {
     "build": "turbo build",
+    "start": "node apps/mcp-server/dist/index.js",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "type-check": "turbo type-check",

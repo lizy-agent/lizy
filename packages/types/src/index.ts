@@ -47,7 +47,9 @@ export type ToolName =
   | 'verify_pudgy_holder'
   | 'get_token_price'
   | 'get_cross_chain_lookup'
-  | 'transform_data';
+  | 'transform_data'
+  | 'get_acp_job'
+  | 'list_acp_jobs';
 
 export interface ToolDefinition {
   name: ToolName;

@@ -13,7 +13,7 @@ declare global {
 export function createX402Middleware(priceUsdc: number) {
   return async function x402(req: Request, res: Response, next: NextFunction): Promise<void> {
     // If already paid via MPP or free quota used, skip x402
-    if (req.mppCharged || req.usedFreeQuota) {
+    if (req.mppCharged) {
       next();
       return;
     }
@@ -34,12 +34,12 @@ export function createX402Middleware(priceUsdc: number) {
           details: {
             x402: {
               scheme: 'exact',
-              network: `abstract-${config.ABSTRACT_CHAIN_ID}`,
+              network: `eip155:${config.ABSTRACT_CHAIN_ID}`,
               maxAmountRequired: priceInMicro.toString(),
               resource: `${req.protocol}://${req.get('host')}${req.originalUrl}`,
               description: `LIZY Tool: ${req.path}`,
               mimeType: 'application/json',
-              payTo: config.USDC_E_ADDRESS,
+              payTo: config.PAYMENT_RECIPIENT,
               maxTimeoutSeconds: 300,
               asset: config.USDC_E_ADDRESS,
               extra: { facilitator: config.X402_FACILITATOR },

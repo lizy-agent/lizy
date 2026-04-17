@@ -6,43 +6,34 @@ on:
 
 jobs:
   deploy-mcp-server:
-    name: Deploy MCP Server
+    name: Deploy MCP Server to Railway
     runs-on: ubuntu-latest
     environment: production
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build MCP server
-        run: pnpm --filter @lizy/mcp-server build
+      - name: Deploy MCP Server
+        run: railway up --service mcp-server --detach
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          UPSTASH_REDIS_URL: ${{ secrets.UPSTASH_REDIS_URL }}
-          UPSTASH_REDIS_TOKEN: ${{ secrets.UPSTASH_REDIS_TOKEN }}
-          SERVER_SECRET: ${{ secrets.SERVER_SECRET }}
-          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
-
-      - name: Deploy to server
-        run: echo "Deploy step — configure with your hosting provider (Railway, Fly.io, etc.)"
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
   deploy-web:
-    name: Deploy Web
+    name: Deploy Web to Vercel
     runs-on: ubuntu-latest
     environment: production
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Vercel
-        run: echo "Deploy step — configure with Vercel CLI or GitHub integration"
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy Web
+        run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+        working-directory: apps/web
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

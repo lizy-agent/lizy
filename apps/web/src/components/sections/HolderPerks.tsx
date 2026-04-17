@@ -5,24 +5,24 @@ import { Gift, Percent, Plus } from 'lucide-react';
 
 const PERKS = [
   {
-    icon: Plus,
-    title: 'PENGU Holders',
-    subtitle: '+50 free calls/day',
-    description: 'Hold any amount of PENGU tokens on Abstract Mainnet to unlock 150 free calls per day instead of 100.',
-    color: 'text-blue-400',
-    bg: 'bg-blue-400/10',
-    border: 'border-blue-400/20',
-    how: 'Automatic detection via eth_call on Abstract Mainnet',
-  },
-  {
     icon: Percent,
     title: 'Pudgy Penguin Holders',
     subtitle: '50% off all tools',
-    description: 'Own any Pudgy Penguin NFT on Ethereum Mainnet and every tool call costs half price automatically.',
+    description: 'Own any Pudgy Penguin NFT on Ethereum Mainnet and every tool call costs half price — automatically applied to both x402 and MPP payments.',
     color: 'text-pink-400',
     bg: 'bg-pink-400/10',
     border: 'border-pink-400/20',
     how: 'Verified via eth_call on Ethereum Mainnet (no API keys)',
+  },
+  {
+    icon: Plus,
+    title: 'PENGU Holders',
+    subtitle: 'Exclusive future perks',
+    description: 'Hold PENGU tokens on Abstract Mainnet. Token-gated features and priority access are being rolled out for PENGU holders.',
+    color: 'text-blue-400',
+    bg: 'bg-blue-400/10',
+    border: 'border-blue-400/20',
+    how: 'Automatic detection via eth_call on Abstract Mainnet',
   },
 ];
 

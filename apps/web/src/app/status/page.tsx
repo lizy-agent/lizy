@@ -1,72 +1,141 @@
-import type { Metadata } from 'next';
-import { CheckCircle, AlertCircle, Clock } from 'lucide-react';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'System Status',
-  description: 'LIZY system status and uptime.',
+import { useEffect, useState } from 'react';
+import { CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
+
+const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
+
+interface HealthData {
+  ok: boolean;
+  checks: Record<string, 'ok' | 'error'>;
+  latencyMs: number;
+  ts: string;
+}
+
+const SERVICE_LABELS: Record<string, string> = {
+  abstract_rpc: 'Abstract Mainnet RPC',
+  redis: 'Upstash Redis Cache',
+  supabase: 'Supabase Database',
 };
 
-const SERVICES = [
-  { name: 'MCP Server', status: 'operational', uptime: '99.9%' },
-  { name: 'Abstract Mainnet RPC', status: 'operational', uptime: '99.8%' },
-  { name: 'Ethereum Mainnet RPC', status: 'operational', uptime: '99.7%' },
-  { name: 'Supabase Database', status: 'operational', uptime: '99.9%' },
-  { name: 'Upstash Redis Cache', status: 'operational', uptime: '99.9%' },
-  { name: 'x402 Facilitator', status: 'operational', uptime: '99.5%' },
-  { name: 'MPP Session Billing', status: 'operational', uptime: '99.5%' },
-  { name: 'Web Frontend', status: 'operational', uptime: '99.9%' },
+const STATIC_SERVICES = [
+  { name: 'x402 Facilitator', key: 'x402' },
+  { name: 'MPP Session Billing', key: 'mpp' },
+  { name: 'Web Frontend', key: 'web' },
 ];
 
 export default function StatusPage() {
-  const allOperational = SERVICES.every((s) => s.status === 'operational');
+  const [health, setHealth] = useState<HealthData | null>(null);
+  const [mcpStatus, setMcpStatus] = useState<'loading' | 'ok' | 'error'>('loading');
+  const [lastChecked, setLastChecked] = useState<string>('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchHealth = async () => {
+    setRefreshing(true);
+    setMcpStatus('loading');
+    try {
+      const res = await fetch(`${mcpUrl}/health`, { signal: AbortSignal.timeout(8000) });
+      const data = await res.json() as HealthData;
+      setHealth(data);
+      setMcpStatus(res.ok ? 'ok' : 'error');
+    } catch {
+      setHealth(null);
+      setMcpStatus('error');
+    } finally {
+      setLastChecked(new Date().toUTCString());
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => { fetchHealth(); }, []);
+
+  const services = [
+    { name: 'MCP Server', status: mcpStatus === 'loading' ? 'checking' : mcpStatus },
+    ...Object.entries(SERVICE_LABELS).map(([key, name]) => ({
+      name,
+      status: mcpStatus === 'loading' ? 'checking' : (health?.checks[key] ?? 'error'),
+    })),
+    ...STATIC_SERVICES.map((s) => ({ name: s.name, status: 'ok' as const })),
+    { name: 'Web Frontend', status: 'ok' },
+  ];
+
+  // dedupe Web Frontend (STATIC_SERVICES already has it via the loop above)
+  const uniqueServices = [
+    { name: 'MCP Server', status: mcpStatus === 'loading' ? 'checking' : mcpStatus },
+    ...Object.entries(SERVICE_LABELS).map(([key, name]) => ({
+      name,
+      status: mcpStatus === 'loading' ? 'checking' : (health?.checks[key] ?? 'error'),
+    })),
+    { name: 'x402 Facilitator', status: 'ok' as const },
+    { name: 'MPP Session Billing', status: 'ok' as const },
+    { name: 'Web Frontend', status: 'ok' as const },
+  ];
+
+  const allOk = mcpStatus === 'ok' && health?.ok === true;
+  const anyChecking = uniqueServices.some((s) => s.status === 'checking');
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-2xl mx-auto">
-        <h1 className="font-display text-4xl font-bold text-white mb-4 text-center">System Status</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="font-display text-4xl font-bold text-white">System Status</h1>
+          <button
+            onClick={fetchHealth}
+            disabled={refreshing}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass text-sm text-muted-foreground hover:text-white transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
 
         {/* Overall status */}
-        <div className={`glass rounded-2xl p-6 mb-8 text-center border ${allOperational ? 'border-neon-green/30' : 'border-red-500/30'}`}>
-          {allOperational ? (
+        <div className={`glass rounded-2xl p-6 mb-8 text-center border ${
+          anyChecking ? 'border-white/10' : allOk ? 'border-neon-green/30' : 'border-red-500/30'
+        }`}>
+          {anyChecking ? (
+            <RefreshCw className="w-10 h-10 text-muted-foreground mx-auto mb-3 animate-spin" />
+          ) : allOk ? (
             <CheckCircle className="w-10 h-10 text-neon-green mx-auto mb-3" />
           ) : (
             <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
           )}
-          <div className={`text-lg font-semibold ${allOperational ? 'text-neon-green' : 'text-red-400'}`}>
-            {allOperational ? 'All Systems Operational' : 'Partial Outage'}
+          <div className={`text-lg font-semibold ${anyChecking ? 'text-muted-foreground' : allOk ? 'text-neon-green' : 'text-red-400'}`}>
+            {anyChecking ? 'Checking systems…' : allOk ? 'All Systems Operational' : 'Partial Outage Detected'}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            Last updated: {new Date().toUTCString()}
-          </div>
+          {health && (
+            <div className="text-xs text-muted-foreground mt-1">
+              MCP latency: {health.latencyMs}ms
+            </div>
+          )}
+          {lastChecked && (
+            <div className="text-xs text-muted-foreground mt-0.5">Last checked: {lastChecked}</div>
+          )}
         </div>
 
         {/* Services */}
-        <div className="space-y-3">
-          {SERVICES.map((service) => (
+        <div className="space-y-3 mb-8">
+          {uniqueServices.map((service) => (
             <div key={service.name} className="glass rounded-xl p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className={`w-2 h-2 rounded-full ${
-                  service.status === 'operational' ? 'bg-neon-green' : 'bg-red-400'
-                } animate-pulse`} />
+                  service.status === 'checking' ? 'bg-yellow-400 animate-pulse' :
+                  service.status === 'ok' ? 'bg-neon-green animate-pulse' : 'bg-red-400'
+                }`} />
                 <span className="text-sm text-white">{service.name}</span>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="w-3 h-3" />
-                  {service.uptime}
-                </div>
-                <span className={`text-xs capitalize ${
-                  service.status === 'operational' ? 'text-neon-green' : 'text-red-400'
-                }`}>
-                  {service.status}
-                </span>
-              </div>
+              <span className={`text-xs capitalize ${
+                service.status === 'checking' ? 'text-yellow-400' :
+                service.status === 'ok' ? 'text-neon-green' : 'text-red-400'
+              }`}>
+                {service.status === 'checking' ? 'checking…' : service.status}
+              </span>
             </div>
           ))}
         </div>
 
         {/* Contracts */}
-        <div className="glass rounded-2xl p-6 mt-8">
+        <div className="glass rounded-2xl p-6">
           <h2 className="font-display font-bold text-white mb-4">Contract Addresses</h2>
           <div className="space-y-3">
             {[
@@ -80,7 +149,9 @@ export default function StatusPage() {
                   <span className="text-white font-medium">{c.name}</span>
                   <span className="ml-2 glass px-2 py-0.5 rounded-full text-muted-foreground">{c.chain}</span>
                 </div>
-                <code className="font-mono text-muted-foreground hidden sm:block">{c.address.slice(0, 10)}...{c.address.slice(-8)}</code>
+                <code className="font-mono text-muted-foreground hidden sm:block">
+                  {c.address.slice(0, 10)}…{c.address.slice(-8)}
+                </code>
               </div>
             ))}
           </div>

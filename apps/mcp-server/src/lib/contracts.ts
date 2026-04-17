@@ -119,6 +119,48 @@ export const ERC20_ABI = [
   },
 ] as const;
 
+// ERC-8183 Agentic Commerce Protocol (ACP)
+// Job state machine: Open(0) → Funded(1) → Submitted(2) → Completed(3)/Rejected(4)/Expired(5)
+export const ACP_ABI = [
+  {
+    name: 'getJob',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: 'jobId', type: 'uint256' }],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        components: [
+          { name: 'id',          type: 'uint256' },
+          { name: 'client',      type: 'address' },
+          { name: 'provider',    type: 'address' },
+          { name: 'evaluator',   type: 'address' },
+          { name: 'description', type: 'string'  },
+          { name: 'budget',      type: 'uint256' },
+          { name: 'expiredAt',   type: 'uint256' },
+          { name: 'status',      type: 'uint8'   },
+          { name: 'hook',        type: 'address' },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'jobCount',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'platformFeeBP',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+] as const;
+
 // Uniswap V3 Pool ABI (minimal, for price queries)
 export const UNISWAP_V3_POOL_ABI = [
   {

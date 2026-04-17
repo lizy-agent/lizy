@@ -6,51 +6,51 @@ import Link from 'next/link';
 
 const TIERS = [
   {
-    name: 'Free',
-    price: '$0',
-    period: '/day',
-    description: 'For exploration and testing',
-    highlight: false,
-    features: [
-      '100 API calls per day',
-      'All 8 MCP tools included',
-      'Abstract Global Wallet auth',
-      'JSON responses',
-      'Standard rate limits',
-    ],
-    cta: { label: 'Start Free', href: '/start' },
-  },
-  {
-    name: 'PENGU Holder',
-    price: '150',
-    period: 'calls/day',
-    description: 'Hold any PENGU tokens on Abstract',
-    highlight: false,
-    badge: 'Token Perk',
-    features: [
-      '150 API calls per day (+50)',
-      'All 8 MCP tools included',
-      'Same pricing as free tier',
-      'Automatic detection on-chain',
-      'No separate sign-up needed',
-    ],
-    cta: { label: 'Get PENGU', href: 'https://abs.xyz', external: true },
-  },
-  {
-    name: 'Pay Per Use',
+    name: 'Pay Per Call',
     price: 'From $0.001',
     period: '/call',
-    description: 'Beyond free quota, pay per call',
-    highlight: true,
-    badge: 'Most Flexible',
+    description: 'x402 micropayment per request',
+    highlight: false,
     features: [
-      'Unlimited API calls',
-      'x402 micropayment support',
-      'MPP session billing',
+      'x402 single-call payments',
+      'All 8 MCP tools included',
       'USDC.e on Abstract Mainnet',
-      '50% off for Pudgy holders',
+      'Abstract Global Wallet auth',
+      'Standard rate limits',
     ],
     cta: { label: 'Get Started', href: '/start' },
+  },
+  {
+    name: 'MPP Session',
+    price: 'From $0.001',
+    period: '/call',
+    description: 'Open a session, stream micro-payments',
+    highlight: true,
+    badge: 'Most Efficient',
+    features: [
+      'One on-chain tx to open session',
+      'Off-chain vouchers per call',
+      'Lower overhead per request',
+      'USDC.e on Abstract Mainnet',
+      'Ideal for high-volume agents',
+    ],
+    cta: { label: 'Get Started', href: '/start' },
+  },
+  {
+    name: 'Pudgy Holder',
+    price: '50% off',
+    period: 'all tools',
+    description: 'Own any Pudgy Penguin on Ethereum',
+    highlight: false,
+    badge: 'NFT Perk',
+    features: [
+      '50% discount on every call',
+      'Automatic on-chain detection',
+      'Works with x402 and MPP',
+      'No sign-up or codes needed',
+      'Verified via Ethereum Mainnet',
+    ],
+    cta: { label: 'View Collection', href: 'https://pudgypenguins.com', external: true },
   },
 ];
 
@@ -71,7 +71,7 @@ export function Pricing() {
             Simple, transparent pricing
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            Start free. Scale with micropayments. NFT holders get perks automatically.
+            Pay per call with x402 or open an MPP session. Pudgy holders get 50% off automatically.
           </p>
         </motion.div>
 

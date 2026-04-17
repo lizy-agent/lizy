@@ -6,23 +6,27 @@ const envSchema = z.object({
 
   // Abstract Chain
   ABSTRACT_RPC: z.string().url().default('https://api.mainnet.abs.xyz'),
-  ABSTRACT_RPC_FALLBACK: z.string().url().default('https://rpc.abs.xyz'),
+  ABSTRACT_RPC_FALLBACK: z.string().url().default('https://api.mainnet.abs.xyz'),
   ABSTRACT_CHAIN_ID: z.coerce.number().default(2741),
 
   // Ethereum
   ETHEREUM_RPC: z.string().url().default('https://eth.llamarpc.com'),
-  ETHEREUM_RPC_FALLBACK: z.string().url().default('https://cloudflare-eth.com/v1/mainnet'),
+  ETHEREUM_RPC_FALLBACK: z.string().url().default('https://eth.llamarpc.com'),
 
   // Payments
   X402_FACILITATOR: z.string().url().default('https://facilitator.x402.abs.xyz'),
   MPP_ENDPOINT: z.string().url().default('https://mpp.abs.xyz'),
-  USDC_E_ADDRESS: z.string().default('0xbd28Bd5A3Ef540d1582828CE2A1a657353008C61'),
+  // Mainnet USDC.e on Abstract (source: docs.abs.xyz)
+  USDC_E_ADDRESS: z.string().default('0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1'),
+  PAYMENT_RECIPIENT: z.string().default('0x0000000000000000000000000000000000000000'),
 
   // Contracts
   IDENTITY_REGISTRY: z.string().default('0x8004A169FB4a3325136EB29fA0ceB6D2e539a432'),
   REPUTATION_REGISTRY: z.string().default('0x8004BAa17C55a88189AE136b182e5fdA19dE9b63'),
   PUDGY_PENGUINS: z.string().default('0xBd3531dA5CF5857e7CfAA92426877b022e612cf8'),
   PENGU_TOKEN: z.string().default('0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95'),
+  // ERC-8183 Agentic Commerce Protocol contract (Abstract Mainnet)
+  ACP_CONTRACT: z.string().default(''),
 
   // Supabase
   SUPABASE_URL: z.string().url(),
@@ -42,9 +46,7 @@ const envSchema = z.object({
   // Terms
   TERMS_VERSION: z.coerce.number().default(1),
 
-  // Quota
-  FREE_QUOTA_DEFAULT: z.coerce.number().default(100),
-  FREE_QUOTA_PENGU_HOLDER: z.coerce.number().default(150),
+
 });
 
 function loadConfig() {

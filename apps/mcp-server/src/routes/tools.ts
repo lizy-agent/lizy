@@ -6,7 +6,6 @@ import { rateLimit } from '../middleware/rateLimit';
 import { mppSession } from '../middleware/mppSession';
 import { createMppChargeMiddleware } from '../middleware/mppCharge';
 import { checkHolderPerks } from '../middleware/checkHolderPerks';
-import { checkFreeQuota } from '../middleware/checkFreeQuota';
 import { createX402Middleware } from '../middleware/x402';
 import { injectQuotaHeaders } from '../middleware/injectQuotaHeaders';
 import { hashInput } from '../lib/ip';
@@ -39,6 +38,7 @@ import {
 } from '../tools/token-price';
 
 import { transformDataSchema, transformData, PRICE as TRANSFORM_PRICE } from '../tools/data-transform';
+import { getAcpJobSchema, listAcpJobsSchema, getAcpJob, listAcpJobs, PRICES as ACP_PRICES } from '../tools/acp';
 
 const router: ReturnType<typeof Router> = Router();
 
@@ -57,7 +57,6 @@ function buildToolMiddleware(price: number) {
   return [
     ...sharedMiddleware,
     createMppChargeMiddleware(price),
-    checkFreeQuota,
     createX402Middleware(price),
   ];
 }
@@ -88,7 +87,7 @@ function wrapTool<TIn, TOut>(
     try {
       const data = await toolFn(parsed.data);
       const processingMs = Date.now() - start;
-      const paymentMethod = req.mppCharged ? 'mpp' : req.x402Paid ? 'x402' : 'free_quota';
+      const paymentMethod = req.mppCharged ? 'mpp' : 'x402';
 
       const effectivePrice = req.holderPerks?.isPudgyHolder
         ? price * (1 - (req.holderPerks.discountBps ?? 0) / 10000)
@@ -99,7 +98,7 @@ function wrapTool<TIn, TOut>(
         toolName,
         inputHash: hashInput(parsed.data),
         paymentMethod,
-        amountUsdc: req.usedFreeQuota ? 0 : effectivePrice,
+        amountUsdc: effectivePrice,
         cached: !!(data as Record<string, unknown>).cachedAt,
         success: true,
         errorCode: null,
@@ -113,9 +112,6 @@ function wrapTool<TIn, TOut>(
           tool: toolName,
           cached: !!(data as Record<string, unknown>).cachedAt,
           payment: paymentMethod,
-          quotaRemaining: req.quotaLimit !== undefined && req.quotaUsed !== undefined
-            ? Math.max(0, req.quotaLimit - req.quotaUsed)
-            : undefined,
           processingMs,
         },
       });
@@ -194,6 +190,19 @@ router.post(
   '/transform_data',
   buildToolMiddleware(TRANSFORM_PRICE),
   wrapTool(transformDataSchema, transformData, 'transform_data', TRANSFORM_PRICE),
+);
+
+// ── ACP (ERC-8183) Routes ─────────────────────────────────────────────────────
+router.post(
+  '/get_acp_job',
+  buildToolMiddleware(ACP_PRICES.get_acp_job),
+  wrapTool(getAcpJobSchema, getAcpJob, 'get_acp_job', ACP_PRICES.get_acp_job),
+);
+
+router.post(
+  '/list_acp_jobs',
+  buildToolMiddleware(ACP_PRICES.list_acp_jobs),
+  wrapTool(listAcpJobsSchema, listAcpJobs, 'list_acp_jobs', ACP_PRICES.list_acp_jobs),
 );
 
 export default router;

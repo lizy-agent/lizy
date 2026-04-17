@@ -7,8 +7,40 @@ export const metadata: Metadata = {
 
 const CHANGES = [
   {
+    version: '0.3.0',
+    date: '2026-04-17',
+    type: 'release',
+    changes: [
+      'Fixed USDC.e address to correct Abstract Mainnet contract (0x84A71c...)',
+      'Fixed x402 network format to eip155:2741 per Abstract protocol spec',
+      'MPP middleware rewritten: proper Authorization: Payment header + ERC-3009 sig verification',
+      'MPP charge mode: verifies on-chain nonce freshness via authorizationState()',
+      'MPP session mode: validates vouchers against 0x2963... escrow contract on Abstract Mainnet',
+      'New tool: get_acp_job — reads ERC-8183 Agentic Commerce Protocol jobs on-chain',
+      'New tool: list_acp_jobs — list recent ACP jobs by client/provider address',
+      'ACP tools added to Playground and MCP protocol (tools/list)',
+      'Docs: added correct USDC.e address, MPP Authorization header format, escrow contract address',
+      'Docs: updated 402 response example with eip155:2741 network format',
+    ],
+  },
+  {
+    version: '0.2.0',
+    date: '2026-04-17',
+    type: 'release',
+    changes: [
+      'New hero section with floating LIZY character and animated frame',
+      'Quota badge in navbar — shows live used/limit with color coding',
+      'Quota widget in Playground with progress bar and 402 handling',
+      'GET /quota endpoint now reflects PENGU holder bonus (150/day vs 100/day)',
+      'localStorage persistence for onboarding step — no more resets on refresh',
+      'favicon.ico served correctly via Next.js App Router',
+      'Fixed Cloudflare-blocked fallback RPC for get_reputation_score',
+      'LIZY character logo in navbar and footer',
+    ],
+  },
+  {
     version: '0.1.0',
-    date: '2024-01-01',
+    date: '2026-04-01',
     type: 'release',
     changes: [
       'Initial release of LIZY MCP server',
