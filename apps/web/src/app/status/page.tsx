@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
+import { CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 
 const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
 
@@ -18,11 +18,6 @@ const SERVICE_LABELS: Record<string, string> = {
   supabase: 'Supabase Database',
 };
 
-const STATIC_SERVICES = [
-  { name: 'x402 Facilitator', key: 'x402' },
-  { name: 'MPP Session Billing', key: 'mpp' },
-  { name: 'Web Frontend', key: 'web' },
-];
 
 export default function StatusPage() {
   const [health, setHealth] = useState<HealthData | null>(null);
@@ -49,17 +44,6 @@ export default function StatusPage() {
 
   useEffect(() => { fetchHealth(); }, []);
 
-  const services = [
-    { name: 'MCP Server', status: mcpStatus === 'loading' ? 'checking' : mcpStatus },
-    ...Object.entries(SERVICE_LABELS).map(([key, name]) => ({
-      name,
-      status: mcpStatus === 'loading' ? 'checking' : (health?.checks[key] ?? 'error'),
-    })),
-    ...STATIC_SERVICES.map((s) => ({ name: s.name, status: 'ok' as const })),
-    { name: 'Web Frontend', status: 'ok' },
-  ];
-
-  // dedupe Web Frontend (STATIC_SERVICES already has it via the loop above)
   const uniqueServices = [
     { name: 'MCP Server', status: mcpStatus === 'loading' ? 'checking' : mcpStatus },
     ...Object.entries(SERVICE_LABELS).map(([key, name]) => ({
@@ -141,7 +125,7 @@ export default function StatusPage() {
             {[
               { name: 'Identity Registry', address: '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432', chain: 'Abstract' },
               { name: 'Reputation Registry', address: '0x8004BAa17C55a88189AE136b182e5fdA19dE9b63', chain: 'Abstract' },
-              { name: 'USDC.e', address: '0xbd28Bd5A3Ef540d1582828CE2A1a657353008C61', chain: 'Abstract' },
+              { name: 'USDC.e', address: '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1', chain: 'Abstract' },
               { name: 'Pudgy Penguins', address: '0xBd3531dA5CF5857e7CfAA92426877b022e612cf8', chain: 'Ethereum' },
             ].map((c) => (
               <div key={c.name} className="flex items-center justify-between text-xs">
