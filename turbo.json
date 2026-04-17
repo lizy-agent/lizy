@@ -1,0 +1,41 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": [
+        "NODE_ENV",
+        "ABSTRACT_RPC",
+        "ABSTRACT_RPC_FALLBACK",
+        "ETHEREUM_RPC",
+        "X402_FACILITATOR",
+        "MPP_ENDPOINT",
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "UPSTASH_REDIS_URL",
+        "UPSTASH_REDIS_TOKEN",
+        "SENTRY_DSN",
+        "NEXT_PUBLIC_ABSTRACT_RPC",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "NEXT_PUBLIC_SITE_URL"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": []
+    },
+    "type-check": {
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

@@ -1,0 +1,48 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-mcp-server:
+    name: Deploy MCP Server
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build MCP server
+        run: pnpm --filter @lizy/mcp-server build
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          UPSTASH_REDIS_URL: ${{ secrets.UPSTASH_REDIS_URL }}
+          UPSTASH_REDIS_TOKEN: ${{ secrets.UPSTASH_REDIS_TOKEN }}
+          SERVER_SECRET: ${{ secrets.SERVER_SECRET }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+
+      - name: Deploy to server
+        run: echo "Deploy step — configure with your hosting provider (Railway, Fly.io, etc.)"
+
+  deploy-web:
+    name: Deploy Web
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        run: echo "Deploy step — configure with Vercel CLI or GitHub integration"
