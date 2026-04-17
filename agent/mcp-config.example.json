@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "lizy": {
+      "url": "https://mcp.lizy.world/mcp",
+      "headers": {
+        "X-Wallet-Address": "0xYourAbstractWalletAddress"
+      }
+    }
+  }
+}
