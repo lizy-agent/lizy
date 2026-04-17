@@ -98,6 +98,9 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <div onClick={() => setMobileOpen(false)}>
+                <ConnectButton />
+              </div>
               <Link
                 href="/start"
                 className="block w-full text-center px-4 py-2 rounded-lg bg-neon-green text-black font-semibold text-sm"
