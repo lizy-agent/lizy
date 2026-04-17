@@ -1,0 +1,8 @@
+[phases.build]
+cmds = [
+  "pnpm --filter @lizy/types build",
+  "pnpm --filter @lizy/mcp-server build"
+]
+
+[start]
+cmd = "node apps/mcp-server/dist/index.js"
