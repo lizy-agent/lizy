@@ -34,7 +34,7 @@ export function Hero() {
               {/* Inner dark ring */}
               <div className="rounded-xl p-1 bg-background">
                 {/* Image floats inside frame */}
-                <div className="relative w-52 h-64 sm:w-60 sm:h-72 rounded-xl overflow-hidden">
+                <div className="relative w-40 h-48 sm:w-44 sm:h-52 rounded-xl overflow-hidden">
                   <div className="animate-float absolute inset-0">
                     <Image
                       src="/lizy.png"
@@ -44,8 +44,8 @@ export function Hero() {
                       priority
                     />
                   </div>
-                  {/* Bottom vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent pointer-events-none" />
+                  {/* Bottom vignette — hides crop */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent pointer-events-none" />
                 </div>
               </div>
             </div>
