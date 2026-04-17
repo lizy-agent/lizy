@@ -6,12 +6,12 @@ const envSchema = z.object({
 
   // Abstract Chain
   ABSTRACT_RPC: z.string().url().default('https://api.mainnet.abs.xyz'),
-  ABSTRACT_RPC_FALLBACK: z.string().url().default('https://rpc.abs.xyz'),
+  ABSTRACT_RPC_FALLBACK: z.string().url().default('https://api.mainnet.abs.xyz'),
   ABSTRACT_CHAIN_ID: z.coerce.number().default(2741),
 
   // Ethereum
   ETHEREUM_RPC: z.string().url().default('https://eth.llamarpc.com'),
-  ETHEREUM_RPC_FALLBACK: z.string().url().default('https://cloudflare-eth.com/v1/mainnet'),
+  ETHEREUM_RPC_FALLBACK: z.string().url().default('https://eth.llamarpc.com'),
 
   // Payments
   X402_FACILITATOR: z.string().url().default('https://facilitator.x402.abs.xyz'),
