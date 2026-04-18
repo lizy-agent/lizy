@@ -28,7 +28,6 @@ export async function walletCommand(ctx: Context) {
 }
 
 export async function handleExportPk(ctx: Context) {
-  // Must be called in private chat
   if (ctx.chat?.type !== 'private') {
     await ctx.answerCbQuery('Open a private chat with the bot to export your key.', { show_alert: true });
     return;
@@ -36,7 +35,6 @@ export async function handleExportPk(ctx: Context) {
 
   await ctx.answerCbQuery();
 
-  // Send warning first
   await ctx.replyWithMarkdown(
     [
       '⚠️ *Private Key Warning*',
@@ -68,7 +66,6 @@ export async function handleRevealPk(ctx: Context) {
 
   const account = deriveWallet(userId);
 
-  // Send PK in a separate message so user can easily delete just that message
   const msg = await ctx.replyWithMarkdown(
     [
       '🔑 *Your Private Key*',
@@ -83,7 +80,6 @@ export async function handleRevealPk(ctx: Context) {
     ].join('\n'),
   );
 
-  // Auto-remind to delete after 60s
   setTimeout(async () => {
     try {
       await ctx.telegram.sendMessage(

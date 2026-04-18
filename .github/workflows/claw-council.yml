@@ -1,0 +1,21 @@
+name: Claw Council Verification
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Swap PENGU - Join Claw Council
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Claw Council skill
+        run: git clone https://github.com/saucaiii/claw-council.git
+
+      - name: Install dependencies
+        run: cd claw-council && npm install
+
+      - name: Check AGW readiness
+        run: cd claw-council && AGENT_PRIVATE_KEY=${{ secrets.PK }} node examples/check_readiness.js
+
+      - name: Run PENGU swap verification
+        run: cd claw-council && AGENT_PRIVATE_KEY=${{ secrets.PK }} node examples/swap_pengu_verification.js

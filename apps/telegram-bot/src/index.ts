@@ -1,15 +1,17 @@
 import { Telegraf } from 'telegraf';
-import { startCommand } from './commands/start.js';
+import { startCommand, handleRefreshBalance } from './commands/start.js';
 import {
   balanceCommand, activityCommand, txCommand,
   reputationCommand, identityCommand, pudgyCommand,
   priceCommand, helpCommand,
 } from './commands/tools.js';
 import { walletCommand, handleExportPk, handleRevealPk } from './commands/wallet.js';
+import { chatHandler } from './commands/chat.js';
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 if (!token) throw new Error('TELEGRAM_BOT_TOKEN is required');
 if (!process.env.BOT_WALLET_SEED) throw new Error('BOT_WALLET_SEED is required');
+if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is required');
 
 const bot = new Telegraf(token);
 
@@ -24,13 +26,24 @@ bot.command('pudgy',      pudgyCommand);
 bot.command('price',      priceCommand);
 bot.command('help',       helpCommand);
 
-bot.action('export_pk', handleExportPk);
-bot.action('reveal_pk', handleRevealPk);
+bot.action('export_pk',       handleExportPk);
+bot.action('reveal_pk',       handleRevealPk);
+bot.action('refresh_balance', handleRefreshBalance);
 
-// Fallback for unknown messages
-bot.on('text', (ctx) => {
-  ctx.reply('Use /help to see available commands.');
-});
+bot.on('text', chatHandler);
+
+bot.telegram.setMyCommands([
+  { command: 'start',      description: 'Your wallet & balance' },
+  { command: 'wallet',     description: 'Address & export private key' },
+  { command: 'balance',    description: 'ETH & token balances' },
+  { command: 'activity',   description: 'Recent on-chain events' },
+  { command: 'tx',         description: 'Transaction details by hash' },
+  { command: 'reputation', description: 'ERC-8004 trust score' },
+  { command: 'identity',   description: 'Abstract identity token' },
+  { command: 'pudgy',      description: 'Pudgy Penguin holder check' },
+  { command: 'price',      description: 'Live DEX price for a token' },
+  { command: 'help',       description: 'Full command reference' },
+]).catch(() => {});
 
 bot.launch();
 console.log('[LIZY Bot] Running...');
