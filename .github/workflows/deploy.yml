@@ -14,8 +14,13 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
+      - name: Verify Railway auth
+        run: railway whoami
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
       - name: Deploy MCP Server
-        run: railway up --service mcp-server --detach
+        run: railway up --service mcp-server
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
