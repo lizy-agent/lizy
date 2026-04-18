@@ -3,26 +3,22 @@ name: Deploy
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy-mcp-server:
     name: Deploy MCP Server to Railway
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Verify Railway auth
-        run: railway whoami
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Deploy MCP Server
-        run: railway up --service mcp-server
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Trigger Railway Deploy Hook
+        run: |
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${{ secrets.RAILWAY_DEPLOY_HOOK }}")
+          echo "Response: $RESPONSE"
+          if [ "$RESPONSE" != "200" ]; then
+            echo "Deploy hook failed with status $RESPONSE"
+            exit 1
+          fi
+          echo "Railway deployment triggered successfully"
 
   deploy-web:
     name: Deploy Web to Vercel

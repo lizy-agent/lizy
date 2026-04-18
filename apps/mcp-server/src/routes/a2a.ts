@@ -114,15 +114,15 @@ const SKILLS = [
 const AGENT_CARD = {
   schemaVersion: '1.0',
   humanReadableId: 'lizy-agent/lizy',
-  agentVersion: '0.3.1',
+  agentVersion: '0.4.0',
   name: 'LIZY',
   description:
     'AI-native data layer for the Abstract ecosystem. ' +
-    'Delivers on-chain reputation (ERC-8004), identity, ACP job state (ERC-8183), ' +
-    'Pudgy NFT data, and token prices — paid per-call via x402 micropayments in USDC.e. ' +
-    'Utility tools (transform, cross-chain lookup) are free.',
+    'Provides wallet balances, transaction data, on-chain reputation (ERC-8004), ' +
+    'identity data, Pudgy NFT holder verification, token prices, ' +
+    'and ACP job state (ERC-8183) — paid per-call via x402 micropayments in USDC.e on Abstract Mainnet.',
   url: `${BASE_URL}/a2a`,
-  version: '0.3.1',
+  version: '0.4.0',
   protocolVersion: '0.3.0',
   provider: {
     name: 'LIZY',
@@ -139,18 +139,19 @@ const AGENT_CARD = {
     {
       scheme: 'none',
       description:
-        'No session auth required. Include X-Wallet-Address header. ' +
-        'Payment via x402 (X-Payment header with ERC-3009 signature) or ' +
-        'MPP (Authorization: Payment header). ' +
-        'Pudgy Penguin holders receive 50% discount automatically.',
+        'No session auth required. Include X-Wallet-Address header (EVM address or AGW smart wallet). ' +
+        'Payment via x402 (X-Payment header with ERC-3009 USDC.e signature) or ' +
+        'MPP session billing (Authorization: Payment header). ' +
+        'Pudgy Penguin holders receive 50% discount automatically. ' +
+        'AGW smart wallets supported via EIP-1271 signature verification.',
     },
   ],
   defaultInputModes: ['application/json'],
   defaultOutputModes: ['application/json'],
-  tags: ['blockchain', 'abstract', 'oracle', 'defi', 'nft', 'reputation', 'x402', 'mcp', 'erc8004', 'erc8183'],
+  tags: ['blockchain', 'abstract', 'oracle', 'defi', 'nft', 'reputation', 'x402', 'mcp', 'erc8004', 'erc8183', 'agw', 'abstract-mainnet'],
   documentationUrl: 'https://lizy.world/docs',
   privacyPolicyUrl: 'https://lizy.world/terms',
-  iconUrl: 'https://lizy.world/lizy.png',
+  iconUrl: 'ipfs://bafybeihy3c4iym7ojgyn46kbdh3qnwlzx5ipttqglughu25w5w4ohq2jc4',
   skills: SKILLS,
 };
 
@@ -195,23 +196,44 @@ router.get('/.well-known/agent-card.json', (_req, res) => {
 router.get('/.well-known/agent-registration.json', (_req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.json({
-    humanReadableId: 'lizy-agent/lizy',
-    registrationAddress: config.PAYMENT_RECIPIENT,
+    // ERC-8004 required fields
+    type: 'https://eips.ethereum.org/EIPS/eip-8004#registration-v1',
     name: 'LIZY',
-    description:
-      'AI-native data layer for the Abstract ecosystem. ' +
-      'Delivers on-chain reputation (ERC-8004), identity, ACP job state (ERC-8183), ' +
-      'Pudgy NFT data, and token prices — paid per-call via x402 micropayments in USDC.e. ' +
-      'Utility tools (transform, cross-chain lookup) are free.',
+    description: AGENT_CARD.description,
+    image: AGENT_CARD.iconUrl,
+
+    // ERC-8004 service endpoints
+    services: [
+      {
+        name: 'MCP',
+        endpoint: `${BASE_URL}/mcp`,
+        version: '2024-11-05',
+        skills: SKILLS.map((s) => s.id),
+        domains: ['blockchain', 'defi', 'nft', 'reputation', 'abstract'],
+      },
+      {
+        name: 'A2A',
+        endpoint: `${BASE_URL}/a2a`,
+        version: '0.3.0',
+        skills: SKILLS.map((s) => s.id),
+        domains: ['blockchain', 'defi', 'nft', 'reputation', 'abstract'],
+      },
+    ],
+
+    // ERC-8004 optional fields
+    active: true,
+    x402Support: true,
+    supportedTrust: ['reputation', 'crypto-economic'],
+
+    // Extended metadata for discovery
+    humanReadableId: 'lizy-agent/lizy',
+    agentWallet: config.PAYMENT_RECIPIENT,
     serviceType: 'MCPA2A+2',
-    version: '0.3.0',
+    version: '0.4.0',
     serviceUrl: BASE_URL,
-    mcpUrl: `${BASE_URL}/mcp`,
-    a2aUrl: `${BASE_URL}/a2a`,
     agentCardUrl: `${BASE_URL}/.well-known/agent.json`,
     chainId: 2741,
     tags: AGENT_CARD.tags,
-    skills: SKILLS.map((s) => s.id),
     iconUrl: AGENT_CARD.iconUrl,
     documentationUrl: AGENT_CARD.documentationUrl,
   });

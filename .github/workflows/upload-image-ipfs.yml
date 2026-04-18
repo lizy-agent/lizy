@@ -1,0 +1,51 @@
+name: Upload LIZY Image to IPFS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload:
+    name: Pin lizy.png to IPFS via Pinata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload to Pinata IPFS
+        id: upload
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            "https://api.pinata.cloud/pinning/pinFileToIPFS" \
+            -H "Authorization: Bearer $PINATA_JWT" \
+            -F "file=@apps/web/public/lizy.png" \
+            -F 'pinataMetadata={"name":"lizy-agent-image"}' \
+            -F 'pinataOptions={"cidVersion":1}')
+
+          echo "Pinata response: $RESPONSE"
+
+          CID=$(echo "$RESPONSE" | jq -r '.IpfsHash')
+          if [ -z "$CID" ] || [ "$CID" = "null" ]; then
+            echo "Upload failed!"
+            echo "$RESPONSE"
+            exit 1
+          fi
+
+          echo "cid=$CID" >> "$GITHUB_OUTPUT"
+          echo "ipfs_url=ipfs://$CID" >> "$GITHUB_OUTPUT"
+          echo "gateway_url=https://gateway.pinata.cloud/ipfs/$CID" >> "$GITHUB_OUTPUT"
+        env:
+          PINATA_JWT: ${{ secrets.PINATA_JWT }}
+
+      - name: Print result
+        run: |
+          echo "## IPFS Upload Complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| CID | \`${{ steps.upload.outputs.cid }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| IPFS URL | \`${{ steps.upload.outputs.ipfs_url }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Gateway | ${{ steps.upload.outputs.gateway_url }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Next: update \`image\` field in \`apps/mcp-server/src/routes/a2a.ts\` to:" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "iconUrl: '${{ steps.upload.outputs.ipfs_url }}'," >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
