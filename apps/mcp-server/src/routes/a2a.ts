@@ -151,7 +151,7 @@ const AGENT_CARD = {
   tags: ['blockchain', 'abstract', 'oracle', 'defi', 'nft', 'reputation', 'x402', 'mcp', 'erc8004', 'erc8183', 'agw', 'abstract-mainnet'],
   documentationUrl: 'https://lizy.world/docs',
   privacyPolicyUrl: 'https://lizy.world/terms',
-  iconUrl: 'https://lizy.world/lizy.png',
+  iconUrl: 'ipfs://bafybeihy3c4iym7ojgyn46kbdh3qnwlzx5ipttqglughu25w5w4ohq2jc4',
   skills: SKILLS,
 };
 
