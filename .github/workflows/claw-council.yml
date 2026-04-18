@@ -5,7 +5,7 @@ on:
 
 jobs:
   verify:
-    name: Swap PENGU & Join Claw Council
+    name: Swap PENGU - Join Claw Council
     runs-on: ubuntu-latest
     steps:
       - name: Clone Claw Council skill
