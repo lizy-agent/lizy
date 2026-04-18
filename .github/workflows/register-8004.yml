@@ -1,0 +1,23 @@
+name: Register LIZY as ERC-8004 Agent
+
+on:
+  workflow_dispatch:
+
+jobs:
+  register:
+    name: Register on Abstract Mainnet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install viem
+        run: npm install viem
+
+      - name: Run registration script
+        env:
+          REGISTRAR_PRIVATE_KEY: ${{ secrets.REGISTRAR_PRIVATE_KEY }}
+        run: node scripts/register-8004.mjs

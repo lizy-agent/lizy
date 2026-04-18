@@ -1,0 +1,26 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "LIZY",
+  "description": "AI agent and on-chain data layer for the Abstract ecosystem. Chat on Telegram or call via MCP API to query wallet balances, activity, reputation (ERC-8004), identity, token prices, and Pudgy Penguin holdings — all sourced directly from Abstract Mainnet. Payments via x402 with USDC.e.",
+  "image": "https://lizy.world/lizy.png",
+  "active": true,
+  "registrations": [
+    {
+      "agentId": 0,
+      "agentRegistry": "eip155:2741:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432"
+    }
+  ],
+  "services": [
+    {
+      "name": "MCP",
+      "endpoint": "https://mcp.lizy.world/",
+      "version": "2025-06-18"
+    },
+    {
+      "name": "web",
+      "endpoint": "https://lizy.world/"
+    }
+  ],
+  "x402Support": true,
+  "supportedTrust": ["reputation"]
+}
