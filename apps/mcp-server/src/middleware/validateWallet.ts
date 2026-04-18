@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { verifyMessage, isAddress } from 'viem';
+import { isAddress } from 'viem';
+import { abstractClient } from '../lib/rpc';
 import { getClientIp, hashIp } from '../lib/ip';
 import { upsertUser } from '../lib/supabase';
 
@@ -38,11 +39,15 @@ export async function validateWallet(
   const signature = parsed.data['x-wallet-signature'];
   const nonce = parsed.data['x-wallet-nonce'];
 
-  // Verify signature if provided (required for write operations)
+  // Verify signature if provided — supports both EOA (ECDSA) and AGW smart wallets (EIP-1271)
   if (signature && nonce) {
     try {
       const message = `LIZY Auth\nAddress: ${address}\nNonce: ${nonce}`;
-      const valid = await verifyMessage({ address, message, signature: signature as `0x${string}` });
+      const valid = await abstractClient.verifyMessage({
+        address,
+        message,
+        signature: signature as `0x${string}`,
+      });
       if (!valid) {
         res.status(401).json({
           ok: false,
@@ -62,7 +67,6 @@ export async function validateWallet(
   req.walletAddress = address;
   req.ipHash = hashIp(getClientIp(req));
 
-  // Upsert user (non-blocking)
   upsertUser(address).catch(() => {});
 
   next();
