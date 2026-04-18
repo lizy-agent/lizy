@@ -32,6 +32,19 @@ bot.on('text', (ctx) => {
   ctx.reply('Use /help to see available commands.');
 });
 
+bot.telegram.setMyCommands([
+  { command: 'start',      description: 'Your wallet & balance' },
+  { command: 'wallet',     description: 'Address & export private key' },
+  { command: 'balance',    description: 'ETH & token balances' },
+  { command: 'activity',   description: 'Recent on-chain events' },
+  { command: 'tx',         description: 'Transaction details by hash' },
+  { command: 'reputation', description: 'ERC-8004 trust score' },
+  { command: 'identity',   description: 'Abstract identity token' },
+  { command: 'pudgy',      description: 'Pudgy Penguin holder check' },
+  { command: 'price',      description: 'Live DEX price for a token' },
+  { command: 'help',       description: 'Full command reference' },
+]).catch(() => {});
+
 bot.launch();
 console.log('[LIZY Bot] Running...');
 
