@@ -63,13 +63,13 @@ export default function StartPage() {
     setTestResult(null);
     try {
       const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL ?? 'https://mcp.lizy.world';
-      const res = await fetch(`${mcpUrl}/tools/transform_data`, {
+      const res = await fetch(`${mcpUrl}/tools/get_wallet_balance`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Wallet-Address': walletAddress,
         },
-        body: JSON.stringify({ operation: 'validate_address', data: walletAddress }),
+        body: JSON.stringify({ address: walletAddress }),
       });
       const data = await res.json();
       setTestResult(JSON.stringify(data, null, 2));
@@ -219,7 +219,7 @@ export default function StartPage() {
                 <Code2 className="w-12 h-12 text-neon-green mx-auto mb-4" />
                 <h2 className="font-display text-2xl font-bold text-white mb-3 text-center">Test a Tool</h2>
                 <p className="text-muted-foreground text-sm text-center mb-6">
-                  Click the button below to test the <code className="font-mono text-neon-green">transform_data</code> tool with your wallet address.
+                  Click the button below to test the <code className="font-mono text-neon-green">get_wallet_balance</code> tool with your wallet address.
                 </p>
                 <button
                   onClick={handleTestTool}

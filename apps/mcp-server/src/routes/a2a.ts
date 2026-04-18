@@ -36,6 +36,24 @@ const SKILLS = [
     outputModes: ['application/json'],
   },
   {
+    id: 'get_wallet_balance',
+    name: 'Get Wallet Balance',
+    description: 'Get ETH and ERC20 token balances for a wallet address on Abstract Mainnet.',
+    tags: ['balance', 'wallet', 'abstract', 'erc20'],
+    examples: ['What is the ETH balance of 0x8004A169...?', 'Get USDC.e balance for 0x8004A169...'],
+    inputModes: ['application/json'],
+    outputModes: ['application/json'],
+  },
+  {
+    id: 'get_transaction',
+    name: 'Get Transaction',
+    description: 'Get transaction details by hash on Abstract Mainnet — from, to, value, status, gas, timestamp.',
+    tags: ['transaction', 'abstract', 'blockchain'],
+    examples: ['Get transaction 0xabc...', 'Did this transaction succeed?'],
+    inputModes: ['application/json'],
+    outputModes: ['application/json'],
+  },
+  {
     id: 'get_reputation_score',
     name: 'Get Reputation Score',
     description: 'Retrieve on-chain reputation score and feedback from the Abstract Reputation Registry (ERC-8004).',
@@ -54,15 +72,6 @@ const SKILLS = [
     outputModes: ['application/json'],
   },
   {
-    id: 'get_pudgy_metadata',
-    name: 'Get Pudgy Penguin Metadata',
-    description: 'Get Pudgy Penguin NFT metadata (name, image, attributes) by token ID.',
-    tags: ['nft', 'pudgy', 'ethereum', 'metadata'],
-    examples: ['Get Pudgy Penguin #1', 'What does token 42 look like?'],
-    inputModes: ['application/json'],
-    outputModes: ['application/json'],
-  },
-  {
     id: 'verify_pudgy_holder',
     name: 'Verify Pudgy Holder',
     description: 'Check if a wallet holds any Pudgy Penguin NFTs on Ethereum Mainnet.',
@@ -77,24 +86,6 @@ const SKILLS = [
     description: 'Get on-chain token price in USD from DEX pool data on Abstract Mainnet.',
     tags: ['defi', 'price', 'token', 'uniswap', 'abstract'],
     examples: ['What is the price of PENGU?', 'Get token price for 0x9E18B8...'],
-    inputModes: ['application/json'],
-    outputModes: ['application/json'],
-  },
-  {
-    id: 'get_cross_chain_lookup',
-    name: 'Cross-Chain Token Lookup',
-    description: 'Look up token address mappings across chains using known bridge registries.',
-    tags: ['cross-chain', 'bridge', 'token', 'multichain'],
-    examples: ['Find PENGU address on Ethereum', 'What is the Ethereum address of token 0x9E18B8...?'],
-    inputModes: ['application/json'],
-    outputModes: ['application/json'],
-  },
-  {
-    id: 'transform_data',
-    name: 'Transform Data',
-    description: 'Transform data: JSON↔CSV conversion, SHA-256/Keccak-256 hashing, address and JSON validation.',
-    tags: ['transform', 'hash', 'utility', 'crypto'],
-    examples: ['SHA-256 hash of "hello"', 'Is 0x8004A169... a valid address?', 'Convert JSON to CSV'],
     inputModes: ['application/json'],
     outputModes: ['application/json'],
   },
@@ -123,15 +114,15 @@ const SKILLS = [
 const AGENT_CARD = {
   schemaVersion: '1.0',
   humanReadableId: 'lizy-agent/lizy',
-  agentVersion: '0.3.0',
+  agentVersion: '0.3.1',
   name: 'LIZY',
   description:
-    'On-chain data oracle for AI agents on Abstract Mainnet. ' +
-    'Provides wallet activity, reputation scores (ERC-8004), identity data, ' +
-    'Pudgy Penguin NFT metadata, token prices, ACP job state (ERC-8183), and ' +
-    'data transforms — all paid via x402 micropayments in USDC.e.',
+    'AI-native data layer for the Abstract ecosystem. ' +
+    'Delivers on-chain reputation (ERC-8004), identity, ACP job state (ERC-8183), ' +
+    'Pudgy NFT data, and token prices — paid per-call via x402 micropayments in USDC.e. ' +
+    'Utility tools (transform, cross-chain lookup) are free.',
   url: `${BASE_URL}/a2a`,
-  version: '0.3.0',
+  version: '0.3.1',
   protocolVersion: '0.3.0',
   provider: {
     name: 'LIZY',
@@ -208,10 +199,10 @@ router.get('/.well-known/agent-registration.json', (_req, res) => {
     registrationAddress: config.PAYMENT_RECIPIENT,
     name: 'LIZY',
     description:
-      'On-chain data oracle for AI agents on Abstract Mainnet. ' +
-      'Provides wallet activity, reputation scores (ERC-8004), identity data, ' +
-      'Pudgy Penguin NFT metadata, token prices, ACP job state (ERC-8183), and ' +
-      'data transforms — all paid via x402 micropayments in USDC.e.',
+      'AI-native data layer for the Abstract ecosystem. ' +
+      'Delivers on-chain reputation (ERC-8004), identity, ACP job state (ERC-8183), ' +
+      'Pudgy NFT data, and token prices — paid per-call via x402 micropayments in USDC.e. ' +
+      'Utility tools (transform, cross-chain lookup) are free.',
     serviceType: 'MCPA2A+2',
     version: '0.3.0',
     serviceUrl: BASE_URL,

@@ -7,27 +7,26 @@ import { useAccount } from 'wagmi';
 const ADDR = '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432';
 
 const TOOL_DEFAULTS: Record<string, object> = {
-  get_wallet_activity:    { address: ADDR, blockRange: 1000 },
-  get_reputation_score:   { address: ADDR },
-  get_identity_data:      { address: ADDR },
-  get_pudgy_metadata:     { tokenId: 1 },
-  verify_pudgy_holder:    { address: ADDR },
-  get_token_price:        { tokenAddress: '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95', chainId: 2741 },
-  get_cross_chain_lookup: { tokenAddress: '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95', sourceChainId: 2741, targetChainId: 1 },
-  transform_data:         { operation: 'sha256', data: 'hello lizy' },
-  get_acp_job:            { jobId: 1 },
-  list_acp_jobs:          { address: ADDR, role: 'client', limit: 10 },
+  get_wallet_activity:  { address: ADDR, blockRange: 100 },
+  get_wallet_balance:   { address: ADDR },
+  get_transaction:      { txHash: '0x0000000000000000000000000000000000000000000000000000000000000000' },
+  get_reputation_score: { address: ADDR },
+  get_identity_data:    { address: ADDR },
+  verify_pudgy_holder:  { address: ADDR },
+  get_token_price:      { tokenAddress: '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95', chainId: 2741 },
+  get_acp_job:          { jobId: 1 },
+  list_acp_jobs:        { address: ADDR, role: 'client', limit: 10 },
 };
 
 const EXAMPLE_CALLS = [
-  { label: 'sha256 hash', body: JSON.stringify({ operation: 'sha256', data: 'hello lizy' }, null, 2), tool: 'transform_data' },
-  { label: 'Validate Address', body: JSON.stringify({ operation: 'validate_address', data: ADDR }, null, 2), tool: 'transform_data' },
+  { label: 'Wallet Balance', body: JSON.stringify({ address: ADDR }, null, 2), tool: 'get_wallet_balance' },
   { label: 'Reputation Score', body: JSON.stringify({ address: ADDR }, null, 2), tool: 'get_reputation_score' },
+  { label: 'Identity Data', body: JSON.stringify({ address: ADDR }, null, 2), tool: 'get_identity_data' },
 ];
 
 export default function PlaygroundPage() {
-  const [tool, setTool] = useState('transform_data');
-  const [body, setBody] = useState(EXAMPLE_CALLS[0].body);
+  const [tool, setTool] = useState('get_wallet_balance');
+  const [body, setBody] = useState(JSON.stringify(TOOL_DEFAULTS['get_wallet_balance'], null, 2));
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);

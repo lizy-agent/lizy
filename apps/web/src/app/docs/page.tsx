@@ -14,53 +14,46 @@ const TOOLS_DOCS = [
     description: 'Fetches eth_getLogs for a wallet address from the last N blocks (max 1000) on Abstract Mainnet.',
   },
   {
+    name: 'get_wallet_balance',
+    price: '$0.002',
+    input: '{ address: string, tokens?: string[] }',
+    output: '{ address, eth: { rawBalance, formatted }, tokens[] }',
+    description: 'Returns ETH balance and ERC20 token balances (default: USDC.e) for any wallet on Abstract Mainnet.',
+  },
+  {
+    name: 'get_transaction',
+    price: '$0.003',
+    input: '{ txHash: string }',
+    output: '{ hash, from, to, value, valueEth, status, blockNumber, blockTimestamp, gasUsed, gasPrice, input }',
+    description: 'Fetches full transaction details by hash on Abstract Mainnet. Status: success | failed | pending.',
+  },
+  {
     name: 'get_reputation_score',
     price: '$0.003',
     input: '{ address: string }',
     output: '{ address, totalScore, positiveCount, negativeCount, neutralCount, recentFeedback[] }',
-    description: 'Reads getSummary() and readFeedback() from the Abstract Reputation Registry (0x8004BAa...).',
+    description: 'Reads getSummary() and readFeedback() from the Abstract Reputation Registry (ERC-8004, 0x8004BAa...).',
   },
   {
     name: 'get_identity_data',
     price: '$0.002',
     input: '{ address: string }',
     output: '{ address, tokenId?, tokenURI?, metadata?, hasIdentity }',
-    description: 'Reads tokenURI() from the Abstract Identity Registry (0x8004A16...).',
-  },
-  {
-    name: 'get_pudgy_metadata',
-    price: '$0.004',
-    input: '{ tokenId: number }',
-    output: '{ tokenId, name, description, image, attributes[] }',
-    description: 'Reads tokenURI() from Pudgy Penguins contract on Ethereum Mainnet (0xBd3531...).',
+    description: 'Reads tokenURI() from the Abstract Identity Registry (0x8004A16...). Decodes base64 JSON metadata.',
   },
   {
     name: 'verify_pudgy_holder',
     price: '$0.002',
     input: '{ address: string }',
     output: '{ address, isHolder, balance, tokenIds[] }',
-    description: 'Checks balanceOf() and tokensOfOwner() on Pudgy Penguins (Ethereum Mainnet only).',
+    description: 'Checks balanceOf() and tokensOfOwner() on Pudgy Penguins contract (Ethereum Mainnet only).',
   },
   {
     name: 'get_token_price',
     price: '$0.003',
     input: '{ tokenAddress: string, chainId?: number, quoteToken?: string }',
     output: '{ tokenAddress, chainId, priceUsd, priceInQuote, quoteToken, poolAddress?, liquidity? }',
-    description: 'Reads slot0() from Uniswap V3 pool contracts on Abstract Mainnet.',
-  },
-  {
-    name: 'get_cross_chain_lookup',
-    price: '$0.005',
-    input: '{ tokenAddress: string, sourceChainId: number, targetChainId: number }',
-    output: '{ sourceChainId, targetChainId, sourceAddress, targetAddress?, bridgeSupported }',
-    description: 'Looks up token address mappings across chains using known bridge registries.',
-  },
-  {
-    name: 'transform_data',
-    price: '$0.001',
-    input: '{ operation: string, data: string, options?: object }',
-    output: '{ operation, result, valid?, error? }',
-    description: 'CPU-only transforms: json_to_csv, csv_to_json, sha256, keccak256, validate_address, validate_json.',
+    description: 'Reads slot0() from Uniswap V3 pool contracts on Abstract Mainnet. Returns price in USD and quote token.',
   },
   {
     name: 'get_acp_job',
@@ -74,7 +67,7 @@ const TOOLS_DOCS = [
     price: '$0.003',
     input: '{ address: string, role?: "client"|"provider", limit?: number }',
     output: '{ address, role, jobs[], total }',
-    description: 'List recent ACP jobs for a wallet address filtered by role (client or provider). Scans up to 200 recent jobs.',
+    description: 'List recent ERC-8183 ACP jobs for a wallet address filtered by role (client or provider).',
   },
 ];
 
@@ -129,13 +122,66 @@ Content-Type: application/json`}
     "lizy": {
       "url": "https://mcp.lizy.world/mcp",
       "headers": {
-        "X-Wallet-Address": "0xYourWallet"
+        "X-Wallet-Address": "0xYourAGWOrEOAWallet"
       }
     }
   }
 }`}
               </pre>
             </div>
+          </div>
+        </section>
+
+        {/* AGW */}
+        <section id="agw" className="glass rounded-2xl p-8 mb-8">
+          <h2 className="font-display text-2xl font-bold text-white mb-2">Abstract Global Wallet (AGW)</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            LIZY natively supports <strong className="text-white">Abstract Global Wallet</strong> — the ERC-4337 smart contract wallet on Abstract Mainnet. Both EOA and AGW addresses work as <code className="font-mono text-neon-green">X-Wallet-Address</code>. Signatures are verified via <strong className="text-white">EIP-1271</strong>, so smart contract wallet proofs validate correctly.
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4 mb-6">
+            <div className="glass rounded-xl p-4 border border-neon-green/20">
+              <div className="font-semibold text-white mb-1">Auth (EIP-1271)</div>
+              <p className="text-xs text-muted-foreground">Send <code className="font-mono text-neon-green">X-Wallet-Signature</code> + <code className="font-mono text-neon-green">X-Wallet-Nonce</code> to prove wallet ownership. LIZY verifies against the AGW contract on-chain — no EOA required.</p>
+            </div>
+            <div className="glass rounded-xl p-4">
+              <div className="font-semibold text-white mb-1">Payments (Session Keys)</div>
+              <p className="text-xs text-muted-foreground">For x402 payments, use an AGW <strong className="text-white">session key</strong> — a scoped EOA that signs <code className="font-mono text-neon-green">TransferWithAuthorization</code> on behalf of your AGW wallet without interactive approval.</p>
+            </div>
+          </div>
+
+          <h3 className="text-sm font-semibold text-white mb-2">Agent Setup with AGW Session Key (TypeScript)</h3>
+          <pre className="glass rounded-lg p-4 font-mono text-xs text-neon-green overflow-x-auto mb-4">
+{`import { createAbstractClient } from '@abstract-foundation/agw-client';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { abstractMainnet } from 'viem/chains';
+
+// 1. Create a session key (EOA) for your agent
+const sessionKey = privateKeyToAccount(generatePrivateKey());
+
+// 2. Create AGW client with session key
+const agwClient = await createAbstractClient({
+  signer: sessionKey,
+  chain: abstractMainnet,
+});
+
+// 3. Use the AGW wallet address as X-Wallet-Address
+const agwAddress = agwClient.account.address;
+
+// 4. Call LIZY — pass AGW address, pay with session key sig
+const res = await fetch('https://mcp.lizy.world/tools/get_wallet_balance', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Wallet-Address': agwAddress,   // AGW smart wallet address
+    'X-Payment': buildX402Payment(sessionKey, paymentDetails), // session key signs
+  },
+  body: JSON.stringify({ address: agwAddress }),
+});`}
+          </pre>
+
+          <div className="glass rounded-xl p-4 border border-neon-green/10 text-xs text-muted-foreground">
+            <span className="text-neon-green font-semibold">Session Key Scope</span> — limit your session key to only <code className="font-mono">transferWithAuthorization</code> on USDC.e (<code className="font-mono">0x84A71ccD...</code>) so it cannot be used for anything else. See <a href="https://docs.abs.xyz/abstract-global-wallet/session-keys/overview" target="_blank" rel="noopener noreferrer" className="text-neon-green underline">AGW Session Keys docs</a>.
           </div>
         </section>
 

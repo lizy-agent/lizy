@@ -11,17 +11,15 @@ import { config } from '../config';
 import { abstractClient, abstractClientFallback, withFallback } from '../lib/rpc';
 import { cacheGet, cacheSet } from '../lib/redis';
 import { UNISWAP_V3_POOL_ABI, ERC20_ABI } from '../lib/contracts';
-import { TokenPriceOutput, CrossChainLookupOutput } from '@lizy/types';
+import { TokenPriceOutput } from '@lizy/types';
 
 // ── Pricing ───────────────────────────────────────────────────────────────────
 export const PRICES = {
-  get_token_price: 0.003,         // $0.003 USDC.e
-  get_cross_chain_lookup: 0.005,  // $0.005 USDC.e
+  get_token_price: 0.003,   // $0.003 USDC.e
 } as const;
 
 export const CACHE_TTL = {
-  get_token_price: 60,            // 1 minute
-  get_cross_chain_lookup: 300,    // 5 minutes
+  get_token_price: 60,      // 1 minute
 } as const;
 
 // Known DEX pools on Abstract Mainnet (verified on-chain addresses)
@@ -43,12 +41,6 @@ export const tokenPriceSchema = z.object({
     .refine(isAddress, 'Invalid EVM address')
     .optional()
     .default(config.USDC_E_ADDRESS),
-});
-
-export const crossChainLookupSchema = z.object({
-  tokenAddress: z.string().refine(isAddress, 'Invalid EVM address'),
-  sourceChainId: z.coerce.number().int().positive(),
-  targetChainId: z.coerce.number().int().positive(),
 });
 
 // ── Uniswap V3 price math ─────────────────────────────────────────────────────
@@ -174,41 +166,3 @@ export async function getTokenPrice(
   return result;
 }
 
-// ── Tool: get_cross_chain_lookup ──────────────────────────────────────────────
-// Known cross-chain token mappings (verified on-chain bridge registries)
-const CROSS_CHAIN_MAP: Record<string, Record<number, `0x${string}`>> = {
-  // USDC.e: Abstract ↔ Ethereum
-  '2741:0x84a71ccd554cc1b02749b35d22f684cc8ec987e1': {
-    1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as `0x${string}`,
-  },
-  '1:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': {
-    2741: '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1' as `0x${string}`,
-  },
-};
-
-export async function getCrossChainLookup(
-  input: z.infer<typeof crossChainLookupSchema>,
-): Promise<CrossChainLookupOutput> {
-  const tokenAddress = input.tokenAddress.toLowerCase() as `0x${string}`;
-  const { sourceChainId, targetChainId } = input;
-
-  const cacheKey = `tool:cross_chain:${sourceChainId}:${tokenAddress}:${targetChainId}`;
-  const cached = await cacheGet<CrossChainLookupOutput>(cacheKey);
-  if (cached) return cached;
-
-  const mapKey = `${sourceChainId}:${tokenAddress}`;
-  const targetAddress = CROSS_CHAIN_MAP[mapKey]?.[targetChainId] ?? undefined;
-  const bridgeSupported = targetAddress !== undefined;
-
-  const result: CrossChainLookupOutput = {
-    sourceChainId,
-    targetChainId,
-    sourceAddress: tokenAddress,
-    targetAddress,
-    bridgeSupported,
-    cachedAt: Date.now(),
-  };
-
-  await cacheSet(cacheKey, result, CACHE_TTL.get_cross_chain_lookup);
-  return result;
-}
