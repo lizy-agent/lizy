@@ -36,7 +36,7 @@ export function createX402Middleware(priceUsdc: number) {
               scheme: 'exact',
               network: `eip155:${config.ABSTRACT_CHAIN_ID}`,
               maxAmountRequired: priceInMicro.toString(),
-              resource: `${req.protocol}://${req.get('x-forwarded-host') ?? req.get('host')}${req.originalUrl}`,
+              resource: `${req.get('x-lizy-proto') ?? req.protocol}://${req.get('x-lizy-public-host') ?? req.get('x-forwarded-host') ?? req.get('host')}${req.originalUrl}`,
               description: `LIZY Tool: ${req.path}`,
               mimeType: 'application/json',
               payTo: config.PAYMENT_RECIPIENT,

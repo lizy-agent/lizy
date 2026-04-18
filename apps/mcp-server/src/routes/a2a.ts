@@ -299,8 +299,8 @@ router.post(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-forwarded-host': publicHost,
-        'x-forwarded-proto': 'https',
+        'x-lizy-public-host': publicHost,
+        'x-lizy-proto': 'https',
         'x-wallet-address': req.walletAddress,
         ...(req.headers['authorization']  ? { authorization:  req.headers['authorization'] as string }  : {}),
         ...(req.headers['x-payment']      ? { 'x-payment':    req.headers['x-payment'] as string }      : {}),
