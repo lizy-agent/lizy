@@ -14,7 +14,6 @@ import { McpRequest, McpResponse, McpToolDefinition, ToolName } from '@lizy/type
 import { PRICES as ORACLE_PRICES } from '../tools/onchain-oracle';
 import { PRICES as PUDGY_PRICES } from '../tools/pudgy-penguins';
 import { PRICES as TOKEN_PRICES } from '../tools/token-price';
-import { PRICE as TRANSFORM_PRICE } from '../tools/data-transform';
 import { PRICES as ACP_PRICES } from '../tools/acp';
 
 const router: ReturnType<typeof Router> = Router();
@@ -33,8 +32,31 @@ const MCP_TOOLS: McpToolDefinition[] = [
     },
   },
   {
+    name: 'get_wallet_balance',
+    description: 'Get ETH and ERC20 token balances for a wallet address on Abstract Mainnet.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        address: { type: 'string', description: 'EVM wallet address (0x...)' },
+        tokens: { type: 'array', items: { type: 'string' }, description: 'ERC20 token addresses to check (default: USDC.e)' },
+      },
+      required: ['address'],
+    },
+  },
+  {
+    name: 'get_transaction',
+    description: 'Get transaction details by hash on Abstract Mainnet — from, to, value, status, gas, timestamp.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        txHash: { type: 'string', description: 'Transaction hash (0x...)' },
+      },
+      required: ['txHash'],
+    },
+  },
+  {
     name: 'get_reputation_score',
-    description: 'Retrieve reputation score and recent feedback from the Abstract Reputation Registry.',
+    description: 'Retrieve on-chain reputation score and recent feedback from the Abstract Reputation Registry (ERC-8004).',
     inputSchema: {
       type: 'object',
       properties: {
@@ -55,19 +77,8 @@ const MCP_TOOLS: McpToolDefinition[] = [
     },
   },
   {
-    name: 'get_pudgy_metadata',
-    description: 'Get Pudgy Penguin NFT metadata by token ID (Ethereum Mainnet contract).',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        tokenId: { type: 'number', description: 'Pudgy Penguin token ID (0-8887)' },
-      },
-      required: ['tokenId'],
-    },
-  },
-  {
     name: 'verify_pudgy_holder',
-    description: 'Verify if a wallet address holds any Pudgy Penguin NFTs on Ethereum Mainnet.',
+    description: 'Verify if a wallet holds any Pudgy Penguin NFTs on Ethereum Mainnet. Returns balance and token IDs.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -78,7 +89,7 @@ const MCP_TOOLS: McpToolDefinition[] = [
   },
   {
     name: 'get_token_price',
-    description: 'Get on-chain token price from DEX pool data on Abstract Mainnet.',
+    description: 'Get on-chain token price in USD from DEX pool data on Abstract Mainnet.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -90,37 +101,8 @@ const MCP_TOOLS: McpToolDefinition[] = [
     },
   },
   {
-    name: 'get_cross_chain_lookup',
-    description: 'Look up a token address mapping across chains using known bridge registries.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        tokenAddress: { type: 'string', description: 'Source token address' },
-        sourceChainId: { type: 'number', description: 'Source chain ID' },
-        targetChainId: { type: 'number', description: 'Target chain ID' },
-      },
-      required: ['tokenAddress', 'sourceChainId', 'targetChainId'],
-    },
-  },
-  {
-    name: 'transform_data',
-    description: 'Transform data: JSON↔CSV, sha256, keccak256, validate_address, validate_json.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        operation: {
-          type: 'string',
-          enum: ['json_to_csv', 'csv_to_json', 'sha256', 'keccak256', 'validate_address', 'validate_json'],
-        },
-        data: { type: 'string', description: 'Data to transform (max 64KB)' },
-        options: { type: 'object', description: 'Optional transform parameters' },
-      },
-      required: ['operation', 'data'],
-    },
-  },
-  {
     name: 'get_acp_job',
-    description: 'Read an ERC-8183 Agentic Commerce Protocol job from the on-chain ACP contract. Returns job state, parties, budget, and status.',
+    description: 'Read an ERC-8183 Agentic Commerce Protocol job from on-chain. Returns job state, parties, budget, and status.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -131,7 +113,7 @@ const MCP_TOOLS: McpToolDefinition[] = [
   },
   {
     name: 'list_acp_jobs',
-    description: 'List recent ACP jobs for a client or provider address. Returns job summaries with status and budget.',
+    description: 'List recent ERC-8183 ACP jobs for a wallet address. Returns job summaries with status and budget.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -145,16 +127,15 @@ const MCP_TOOLS: McpToolDefinition[] = [
 ];
 
 const TOOL_PRICES: Record<ToolName, number> = {
-  get_wallet_activity: ORACLE_PRICES.get_wallet_activity,
+  get_wallet_activity:  ORACLE_PRICES.get_wallet_activity,
+  get_wallet_balance:   ORACLE_PRICES.get_wallet_balance,
+  get_transaction:      ORACLE_PRICES.get_transaction,
   get_reputation_score: ORACLE_PRICES.get_reputation_score,
-  get_identity_data: ORACLE_PRICES.get_identity_data,
-  get_pudgy_metadata: PUDGY_PRICES.get_pudgy_metadata,
-  verify_pudgy_holder: PUDGY_PRICES.verify_pudgy_holder,
-  get_token_price: TOKEN_PRICES.get_token_price,
-  get_cross_chain_lookup: TOKEN_PRICES.get_cross_chain_lookup,
-  transform_data: TRANSFORM_PRICE,
-  get_acp_job:    ACP_PRICES.get_acp_job,
-  list_acp_jobs:  ACP_PRICES.list_acp_jobs,
+  get_identity_data:    ORACLE_PRICES.get_identity_data,
+  verify_pudgy_holder:  PUDGY_PRICES.verify_pudgy_holder,
+  get_token_price:      TOKEN_PRICES.get_token_price,
+  get_acp_job:          ACP_PRICES.get_acp_job,
+  list_acp_jobs:        ACP_PRICES.list_acp_jobs,
 };
 
 function jsonrpcError(id: string | number, code: number, message: string, data?: unknown): McpResponse {

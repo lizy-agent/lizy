@@ -41,13 +41,12 @@ export interface QuotaStatus {
 
 export type ToolName =
   | 'get_wallet_activity'
+  | 'get_wallet_balance'
+  | 'get_transaction'
   | 'get_reputation_score'
   | 'get_identity_data'
-  | 'get_pudgy_metadata'
   | 'verify_pudgy_holder'
   | 'get_token_price'
-  | 'get_cross_chain_lookup'
-  | 'transform_data'
   | 'get_acp_job'
   | 'list_acp_jobs';
 
@@ -74,8 +73,13 @@ export interface GetIdentityDataInput {
   address: `0x${string}`;
 }
 
-export interface GetPudgyMetadataInput {
-  tokenId: number;
+export interface GetWalletBalanceInput {
+  address: `0x${string}`;
+  tokens?: `0x${string}`[];
+}
+
+export interface GetTransactionInput {
+  txHash: `0x${string}`;
 }
 
 export interface VerifyPudgyHolderInput {
@@ -86,20 +90,6 @@ export interface GetTokenPriceInput {
   tokenAddress: `0x${string}`;
   chainId?: number; // default 2741 (Abstract)
   quoteToken?: `0x${string}`;
-}
-
-export interface GetCrossChainLookupInput {
-  tokenAddress: `0x${string}`;
-  sourceChainId: number;
-  targetChainId: number;
-}
-
-export type TransformOperation = 'json_to_csv' | 'csv_to_json' | 'sha256' | 'keccak256' | 'validate_address' | 'validate_json';
-
-export interface TransformDataInput {
-  operation: TransformOperation;
-  data: string;
-  options?: Record<string, string | number | boolean>;
 }
 
 // ── Tool Outputs ──────────────────────────────────────────────────────────────
@@ -148,12 +138,33 @@ export interface IdentityDataOutput {
   cachedAt: number;
 }
 
-export interface PudgyMetadataOutput {
-  tokenId: number;
-  name: string;
-  description: string;
-  image: string;
-  attributes: Array<{ trait_type: string; value: string | number }>;
+export interface TokenBalance {
+  address: `0x${string}`;
+  symbol: string;
+  decimals: number;
+  rawBalance: string;
+  formatted: string;
+}
+
+export interface WalletBalanceOutput {
+  address: `0x${string}`;
+  eth: { rawBalance: string; formatted: string };
+  tokens: TokenBalance[];
+  cachedAt: number;
+}
+
+export interface TransactionOutput {
+  hash: `0x${string}`;
+  from: `0x${string}`;
+  to: `0x${string}` | null;
+  value: string;
+  valueEth: string;
+  status: 'success' | 'failed' | 'pending';
+  blockNumber: number | null;
+  blockTimestamp: number | null;
+  gasUsed: number | null;
+  gasPrice: number | null;
+  input: string;
   cachedAt: number;
 }
 
@@ -174,22 +185,6 @@ export interface TokenPriceOutput {
   poolAddress?: `0x${string}`;
   liquidity?: string;
   cachedAt: number;
-}
-
-export interface CrossChainLookupOutput {
-  sourceChainId: number;
-  targetChainId: number;
-  sourceAddress: `0x${string}`;
-  targetAddress?: `0x${string}`;
-  bridgeSupported: boolean;
-  cachedAt: number;
-}
-
-export interface TransformDataOutput {
-  operation: TransformOperation;
-  result: string;
-  valid?: boolean;
-  error?: string;
 }
 
 // ── Payment ───────────────────────────────────────────────────────────────────

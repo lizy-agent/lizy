@@ -1,80 +1,98 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Activity, Star, TrendingUp, Shield, Search, ArrowLeftRight, Hash } from 'lucide-react';
+import { Activity, Star, TrendingUp, Shield, Search, Wallet, Receipt, Briefcase, List } from 'lucide-react';
 
 const TOOLS = [
   {
     icon: Activity,
     name: 'get_wallet_activity',
-    category: 'Oracle',
-    description: 'Fetch event logs for any wallet from the last 1000 blocks on Abstract Mainnet.',
+    category: 'Abstract Core',
+    description: 'Fetch event logs for any wallet from the last N blocks on Abstract Mainnet.',
     price: '$0.005',
+    free: false,
+    color: 'text-blue-400',
+    bg: 'bg-blue-400/10',
+  },
+  {
+    icon: Wallet,
+    name: 'get_wallet_balance',
+    category: 'Abstract Core',
+    description: 'Get ETH and ERC20 token balances for any wallet address on Abstract Mainnet.',
+    price: '$0.002',
+    free: false,
+    color: 'text-blue-400',
+    bg: 'bg-blue-400/10',
+  },
+  {
+    icon: Receipt,
+    name: 'get_transaction',
+    category: 'Abstract Core',
+    description: 'Fetch transaction details by hash — from, to, value, status, gas, and timestamp.',
+    price: '$0.003',
+    free: false,
     color: 'text-blue-400',
     bg: 'bg-blue-400/10',
   },
   {
     icon: Star,
     name: 'get_reputation_score',
-    category: 'Oracle',
-    description: 'Read reputation score and feedback from the Abstract Reputation Registry.',
+    category: 'Abstract Core',
+    description: 'Read on-chain reputation score and feedback from the Abstract Reputation Registry (ERC-8004).',
     price: '$0.003',
+    free: false,
     color: 'text-yellow-400',
     bg: 'bg-yellow-400/10',
   },
   {
     icon: Search,
     name: 'get_identity_data',
-    category: 'Oracle',
+    category: 'Abstract Core',
     description: 'Fetch identity token URI and metadata from the Abstract Identity Registry.',
     price: '$0.002',
+    free: false,
     color: 'text-purple-400',
     bg: 'bg-purple-400/10',
   },
   {
-    icon: Shield,
-    name: 'get_pudgy_metadata',
-    category: 'Pudgy Penguins',
-    description: 'Retrieve Pudgy Penguin NFT metadata by token ID from Ethereum Mainnet.',
-    price: '$0.004',
-    color: 'text-pink-400',
-    bg: 'bg-pink-400/10',
+    icon: TrendingUp,
+    name: 'get_token_price',
+    category: 'Abstract Core',
+    description: 'On-chain token price aggregated from DEX pool state on Abstract Mainnet.',
+    price: '$0.003',
+    free: false,
+    color: 'text-blue-400',
+    bg: 'bg-blue-400/10',
+  },
+  {
+    icon: Briefcase,
+    name: 'get_acp_job',
+    category: 'ACP (ERC-8183)',
+    description: 'Read an Agentic Commerce Protocol job from on-chain — status, parties, and budget.',
+    price: '$0.002',
+    free: false,
+    color: 'text-neon-green',
+    bg: 'bg-neon-green/10',
+  },
+  {
+    icon: List,
+    name: 'list_acp_jobs',
+    category: 'ACP (ERC-8183)',
+    description: 'List recent ERC-8183 ACP jobs for a wallet address as client or provider.',
+    price: '$0.003',
+    free: false,
+    color: 'text-neon-green',
+    bg: 'bg-neon-green/10',
   },
   {
     icon: Shield,
     name: 'verify_pudgy_holder',
-    category: 'Pudgy Penguins',
-    description: 'Verify if a wallet holds Pudgy Penguins on Ethereum Mainnet.',
+    category: 'Pudgy Ecosystem',
+    description: 'Verify if a wallet holds Pudgy Penguins on Ethereum Mainnet. Returns balance and token IDs.',
     price: '$0.002',
+    free: false,
     color: 'text-pink-400',
     bg: 'bg-pink-400/10',
-  },
-  {
-    icon: TrendingUp,
-    name: 'get_token_price',
-    category: 'Prices',
-    description: 'On-chain token price aggregated from DEX pool state on Abstract Mainnet.',
-    price: '$0.003',
-    color: 'text-neon-green',
-    bg: 'bg-neon-green/10',
-  },
-  {
-    icon: ArrowLeftRight,
-    name: 'get_cross_chain_lookup',
-    category: 'Prices',
-    description: 'Look up token address mappings across chains using on-chain bridge registries.',
-    price: '$0.005',
-    color: 'text-neon-green',
-    bg: 'bg-neon-green/10',
-  },
-  {
-    icon: Hash,
-    name: 'transform_data',
-    category: 'Utility',
-    description: 'JSON↔CSV, sha256, keccak256, address validation — pure CPU transforms.',
-    price: '$0.001',
-    color: 'text-orange-400',
-    bg: 'bg-orange-400/10',
   },
 ];
 
@@ -89,13 +107,13 @@ export function Tools() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs text-muted-foreground mb-4">
-            MCP Tools
+            MCP + A2A Tools
           </div>
           <h2 className="font-display text-4xl font-bold text-white mb-4">
-            8 production-ready tools
+            9 tools for the Abstract ecosystem
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            Every tool returns compact JSON, uses dual-RPC with fallback, and is cached via Redis.
+            Abstract-native oracle data, ACP job management (ERC-8183), reputation (ERC-8004), and Pudgy ecosystem verification — all paid per-call via x402.
           </p>
         </motion.div>
 
@@ -115,7 +133,7 @@ export function Tools() {
                   <div className={`w-9 h-9 rounded-lg ${tool.bg} flex items-center justify-center`}>
                     <Icon className={`w-4 h-4 ${tool.color}`} />
                   </div>
-                  <span className={`text-xs font-mono font-semibold ${tool.color}`}>{tool.price}</span>
+                  <span className={`text-xs font-mono font-semibold ${tool.free ? 'text-neon-green' : tool.color}`}>{tool.price}</span>
                 </div>
                 <div className="text-xs text-muted-foreground mb-1">{tool.category}</div>
                 <h3 className="font-mono text-sm font-semibold text-white mb-2 break-all">{tool.name}</h3>
@@ -132,7 +150,7 @@ export function Tools() {
           className="text-center mt-8"
         >
           <p className="text-xs text-muted-foreground">
-            All prices in USDC.e · Pudgy Penguin holders get 50% off all tools
+            All prices in USDC.e on Abstract Mainnet · Pudgy Penguin holders get 50% off all tools
           </p>
         </motion.div>
       </div>

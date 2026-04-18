@@ -58,10 +58,20 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="font-display text-5xl sm:text-6xl md:text-7xl font-bold text-white leading-tight mb-8"
+          className="font-display text-5xl sm:text-6xl md:text-7xl font-bold text-white leading-tight mb-4"
         >
           Meet <span className="gradient-text">LIZY</span>
         </motion.h1>
+
+        {/* Tagline */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          className="text-muted-foreground text-lg sm:text-xl max-w-md mx-auto mb-8"
+        >
+          AI-native data layer for the Abstract ecosystem
+        </motion.p>
 
         {/* CTAs */}
         <motion.div
@@ -93,9 +103,9 @@ export function Hero() {
           className="flex items-center justify-center gap-3 flex-wrap"
         >
           {[
-            { icon: Zap, label: '8 Tools' },
+            { icon: Globe, label: 'Abstract-native' },
             { icon: Shield, label: 'Pudgy 50% off' },
-            { icon: Globe, label: 'x402 + MPP' },
+            { icon: Zap, label: 'x402 + MPP' },
           ].map(({ icon: Icon, label }) => (
             <div key={label} className="flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs text-muted-foreground border border-white/5">
               <Icon className="w-3 h-3 text-neon-green" />
