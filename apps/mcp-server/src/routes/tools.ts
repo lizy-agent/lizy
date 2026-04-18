@@ -61,6 +61,10 @@ function buildToolMiddleware(price: number) {
   ];
 }
 
+function buildFreeToolMiddleware() {
+  return [...sharedMiddleware];
+}
+
 function wrapTool<TIn, TOut>(
   schema: { safeParse: (data: unknown) => { success: true; data: TIn } | { success: false; error: { flatten: () => { fieldErrors: Record<string, string[]> } } } },
   toolFn: (input: TIn) => Promise<TOut>,
@@ -181,15 +185,15 @@ router.post(
 
 router.post(
   '/get_cross_chain_lookup',
-  buildToolMiddleware(TOKEN_PRICES.get_cross_chain_lookup),
-  wrapTool(crossChainLookupSchema, getCrossChainLookup, 'get_cross_chain_lookup', TOKEN_PRICES.get_cross_chain_lookup),
+  buildFreeToolMiddleware(),
+  wrapTool(crossChainLookupSchema, getCrossChainLookup, 'get_cross_chain_lookup', 0),
 );
 
 // ── Transform Route ───────────────────────────────────────────────────────────
 router.post(
   '/transform_data',
-  buildToolMiddleware(TRANSFORM_PRICE),
-  wrapTool(transformDataSchema, transformData, 'transform_data', TRANSFORM_PRICE),
+  buildFreeToolMiddleware(),
+  wrapTool(transformDataSchema, transformData, 'transform_data', 0),
 );
 
 // ── ACP (ERC-8183) Routes ─────────────────────────────────────────────────────

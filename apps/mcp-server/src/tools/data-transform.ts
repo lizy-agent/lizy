@@ -11,7 +11,7 @@ import { keccak256, isAddress, toBytes } from 'viem';
 import { TransformDataOutput, TransformOperation } from '@lizy/types';
 
 // ── Pricing ───────────────────────────────────────────────────────────────────
-export const PRICE = 0.001; // $0.001 USDC.e
+export const PRICE = 0; // free utility tool
 
 // ── Zod Schema ────────────────────────────────────────────────────────────────
 export const transformDataSchema = z.object({

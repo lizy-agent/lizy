@@ -16,7 +16,7 @@ import { TokenPriceOutput, CrossChainLookupOutput } from '@lizy/types';
 // ── Pricing ───────────────────────────────────────────────────────────────────
 export const PRICES = {
   get_token_price: 0.003,         // $0.003 USDC.e
-  get_cross_chain_lookup: 0.005,  // $0.005 USDC.e
+  get_cross_chain_lookup: 0,  // free utility tool
 } as const;
 
 export const CACHE_TTL = {

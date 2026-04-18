@@ -1,4 +1,4 @@
-# LIZY — The data layer AI agents pay to use.
+# LIZY — AI-native data layer for the Abstract ecosystem.
 
 [![License: BUSL-1.1](https://img.shields.io/badge/License-BUSL--1.1-blue.svg)](LICENSE)
 [![Twitter](https://img.shields.io/twitter/follow/lizy_agent?style=social)](https://twitter.com/lizy_agent)
@@ -6,7 +6,7 @@
 **Domain:** https://lizy.world  
 **Chain:** Abstract Mainnet (chainId 2741)
 
-LIZY is a monetized MCP (Model Context Protocol) data layer that AI agents pay to use. It provides on-chain data tools with x402 micropayments and MPP session billing.
+LIZY is the AI-native data layer for the Abstract ecosystem. AI agents query on-chain reputation (ERC-8004), identity, ACP job state (ERC-8183), Pudgy NFT data, and token prices — paid per-call via x402 micropayments in USDC.e. Utility tools are free.
 
 ## Architecture
 
@@ -23,16 +23,35 @@ lizy/
 
 ## Tools
 
+**Abstract Core**
+
 | Tool | Description | Price |
 |------|-------------|-------|
 | `get_wallet_activity` | eth_getLogs last 1000 blocks | $0.005 USDC.e |
-| `get_reputation_score` | Reputation Registry summary | $0.003 USDC.e |
+| `get_reputation_score` | Reputation Registry (ERC-8004) | $0.003 USDC.e |
 | `get_identity_data` | Identity Registry tokenURI | $0.002 USDC.e |
+| `get_token_price` | On-chain DEX price aggregation | $0.003 USDC.e |
+
+**ACP (ERC-8183)**
+
+| Tool | Description | Price |
+|------|-------------|-------|
+| `get_acp_job` | Read ACP job — status, parties, budget | $0.002 USDC.e |
+| `list_acp_jobs` | List ACP jobs for a wallet | $0.003 USDC.e |
+
+**Pudgy Ecosystem**
+
+| Tool | Description | Price |
+|------|-------------|-------|
 | `get_pudgy_metadata` | Pudgy Penguins NFT metadata | $0.004 USDC.e |
 | `verify_pudgy_holder` | Verify Pudgy Penguin ownership | $0.002 USDC.e |
-| `get_token_price` | On-chain DEX price aggregation | $0.003 USDC.e |
-| `get_cross_chain_lookup` | Cross-chain token lookup | $0.005 USDC.e |
-| `transform_data` | JSON↔CSV, hash, validate | $0.001 USDC.e |
+
+**Utility (Free)**
+
+| Tool | Description | Price |
+|------|-------------|-------|
+| `get_cross_chain_lookup` | Cross-chain token lookup | Free |
+| `transform_data` | JSON↔CSV, hash, validate | Free |
 
 ## Free Tier
 

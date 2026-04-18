@@ -126,10 +126,10 @@ const AGENT_CARD = {
   agentVersion: '0.3.1',
   name: 'LIZY',
   description:
-    'On-chain data oracle for AI agents on Abstract Mainnet. ' +
-    'Provides wallet activity, reputation scores (ERC-8004), identity data, ' +
-    'Pudgy Penguin NFT metadata, token prices, ACP job state (ERC-8183), and ' +
-    'data transforms — all paid via x402 micropayments in USDC.e.',
+    'AI-native data layer for the Abstract ecosystem. ' +
+    'Delivers on-chain reputation (ERC-8004), identity, ACP job state (ERC-8183), ' +
+    'Pudgy NFT data, and token prices — paid per-call via x402 micropayments in USDC.e. ' +
+    'Utility tools (transform, cross-chain lookup) are free.',
   url: `${BASE_URL}/a2a`,
   version: '0.3.1',
   protocolVersion: '0.3.0',
@@ -208,10 +208,10 @@ router.get('/.well-known/agent-registration.json', (_req, res) => {
     registrationAddress: config.PAYMENT_RECIPIENT,
     name: 'LIZY',
     description:
-      'On-chain data oracle for AI agents on Abstract Mainnet. ' +
-      'Provides wallet activity, reputation scores (ERC-8004), identity data, ' +
-      'Pudgy Penguin NFT metadata, token prices, ACP job state (ERC-8183), and ' +
-      'data transforms — all paid via x402 micropayments in USDC.e.',
+      'AI-native data layer for the Abstract ecosystem. ' +
+      'Delivers on-chain reputation (ERC-8004), identity, ACP job state (ERC-8183), ' +
+      'Pudgy NFT data, and token prices — paid per-call via x402 micropayments in USDC.e. ' +
+      'Utility tools (transform, cross-chain lookup) are free.',
     serviceType: 'MCPA2A+2',
     version: '0.3.0',
     serviceUrl: BASE_URL,
