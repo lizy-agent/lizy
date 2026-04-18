@@ -292,13 +292,14 @@ router.post(
     const taskId = p.message.taskId ?? randomUUID();
 
     // Delegate to the tool HTTP endpoint (reuses all payment middleware)
-    // Pass public host headers so x402 builds the correct resource URL in 402 responses
+    // Pass forwarded-host so x402 builds the correct resource URL in 402 responses
+    // (Node.js fetch forbids overriding the Host header directly)
     const publicHost = new URL(BASE_URL).host;
     const toolRes = await fetch(`http://localhost:${process.env.PORT ?? 3001}/tools/${skillId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'host': publicHost,
+        'x-forwarded-host': publicHost,
         'x-forwarded-proto': 'https',
         'x-wallet-address': req.walletAddress,
         ...(req.headers['authorization']  ? { authorization:  req.headers['authorization'] as string }  : {}),
