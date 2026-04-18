@@ -67,14 +67,17 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile menu */}
-          <button
-            className="md:hidden text-muted-foreground hover:text-white"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          {/* Mobile: connect button always visible + burger */}
+          <div className="flex items-center gap-2 md:hidden">
+            <ConnectButton />
+            <button
+              className="text-muted-foreground hover:text-white"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -98,9 +101,6 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <div onClick={() => setMobileOpen(false)}>
-                <ConnectButton />
-              </div>
               <Link
                 href="/start"
                 className="block w-full text-center px-4 py-2 rounded-lg bg-neon-green text-black font-semibold text-sm"
