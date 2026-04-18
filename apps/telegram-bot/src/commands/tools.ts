@@ -10,7 +10,6 @@ function walletOf(ctx: Context) {
   return deriveWallet(userId);
 }
 
-// Parse optional address arg from message text, fall back to user wallet
 function resolveAddress(ctx: Context, arg?: string): string {
   if (arg && isAddress(arg)) return arg;
   return walletOf(ctx).address;
@@ -26,7 +25,6 @@ async function run(ctx: Context, fn: () => Promise<string>) {
   } catch (err) {
     const e = err as Error;
     if (e.message.includes('Terms of Service')) {
-      // Auto-agree and retry once
       const wallet = walletOf(ctx);
       await fetch(`${LIZY_URL}/terms/agree`, {
         method: 'POST',
@@ -47,7 +45,7 @@ export async function balanceCommand(ctx: Context) {
   const args = (ctx.message as { text?: string })?.text?.split(' ') ?? [];
   const address = resolveAddress(ctx, args[1]);
   const wallet = walletOf(ctx);
-  await run(ctx, async () => fmtBalance(await lizy.balance(wallet.address, address)));
+  await run(ctx, async () => fmtBalance(await lizy.balance(wallet.address, wallet.privateKey, address)));
 }
 
 export async function activityCommand(ctx: Context) {
@@ -55,7 +53,7 @@ export async function activityCommand(ctx: Context) {
   const address = resolveAddress(ctx, args[1]);
   const wallet = walletOf(ctx);
   await run(ctx, async () => {
-    const r = await lizy.activity(wallet.address, address);
+    const r = await lizy.activity(wallet.address, wallet.privateKey, address);
     return fmtActivity(r.events, address);
   });
 }
@@ -68,28 +66,28 @@ export async function txCommand(ctx: Context) {
     return;
   }
   const wallet = walletOf(ctx);
-  await run(ctx, async () => fmtTx(await lizy.tx(wallet.address, hash)));
+  await run(ctx, async () => fmtTx(await lizy.tx(wallet.address, wallet.privateKey, hash)));
 }
 
 export async function reputationCommand(ctx: Context) {
   const args = (ctx.message as { text?: string })?.text?.split(' ') ?? [];
   const address = resolveAddress(ctx, args[1]);
   const wallet = walletOf(ctx);
-  await run(ctx, async () => fmtReputation(await lizy.reputation(wallet.address, address)));
+  await run(ctx, async () => fmtReputation(await lizy.reputation(wallet.address, wallet.privateKey, address)));
 }
 
 export async function identityCommand(ctx: Context) {
   const args = (ctx.message as { text?: string })?.text?.split(' ') ?? [];
   const address = resolveAddress(ctx, args[1]);
   const wallet = walletOf(ctx);
-  await run(ctx, async () => fmtIdentity(await lizy.identity(wallet.address, address)));
+  await run(ctx, async () => fmtIdentity(await lizy.identity(wallet.address, wallet.privateKey, address)));
 }
 
 export async function pudgyCommand(ctx: Context) {
   const args = (ctx.message as { text?: string })?.text?.split(' ') ?? [];
   const address = resolveAddress(ctx, args[1]);
   const wallet = walletOf(ctx);
-  await run(ctx, async () => fmtPudgy(await lizy.pudgy(wallet.address, address)));
+  await run(ctx, async () => fmtPudgy(await lizy.pudgy(wallet.address, wallet.privateKey, address)));
 }
 
 export async function priceCommand(ctx: Context) {
@@ -100,7 +98,7 @@ export async function priceCommand(ctx: Context) {
     return;
   }
   const wallet = walletOf(ctx);
-  await run(ctx, async () => fmtPrice(await lizy.price(wallet.address, tokenAddress)));
+  await run(ctx, async () => fmtPrice(await lizy.price(wallet.address, wallet.privateKey, tokenAddress)));
 }
 
 export async function helpCommand(ctx: Context) {
@@ -120,6 +118,6 @@ export async function helpCommand(ctx: Context) {
     '/price `<token_address>` — live DEX price on Abstract',
     '',
     '_Omit address to query your own wallet._',
-    '_100 free calls/day. Powered by [LIZY](https://lizy.world)._',
+    '_Powered by [LIZY](https://lizy.world)._',
   ].join('\n'));
 }
