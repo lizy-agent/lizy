@@ -6,10 +6,12 @@ import {
   priceCommand, helpCommand,
 } from './commands/tools.js';
 import { walletCommand, handleExportPk, handleRevealPk } from './commands/wallet.js';
+import { chatHandler } from './commands/chat.js';
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 if (!token) throw new Error('TELEGRAM_BOT_TOKEN is required');
 if (!process.env.BOT_WALLET_SEED) throw new Error('BOT_WALLET_SEED is required');
+if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY is required');
 
 const bot = new Telegraf(token);
 
@@ -28,9 +30,7 @@ bot.action('export_pk',       handleExportPk);
 bot.action('reveal_pk',       handleRevealPk);
 bot.action('refresh_balance', handleRefreshBalance);
 
-bot.on('text', (ctx) => {
-  ctx.reply('Use /help to see available commands.');
-});
+bot.on('text', chatHandler);
 
 bot.telegram.setMyCommands([
   { command: 'start',      description: 'Your wallet & balance' },
