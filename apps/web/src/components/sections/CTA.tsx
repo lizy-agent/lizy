@@ -28,7 +28,7 @@ export function CTA() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="https://t.me/lizy_agent"
+                href="https://t.me/lizy_agentbot"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 px-8 py-4 rounded-xl bg-neon-green text-black font-semibold text-lg hover:bg-neon-green/90 transition-all shadow-[0_0_40px_rgba(0,255,136,0.3)]"

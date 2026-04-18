@@ -8,7 +8,7 @@ const STEPS = [
     icon: MessageCircle,
     step: '01',
     title: 'Chat on Telegram',
-    description: 'Message @lizy_agent on Telegram. LIZY gives you a dedicated wallet — no sign-up needed.',
+    description: 'Message @lizy_agentbot on Telegram. LIZY gives you a dedicated wallet — no sign-up needed.',
     color: 'text-purple-400',
     bg: 'bg-purple-400/10',
     border: 'border-purple-400/20',

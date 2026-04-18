@@ -7,7 +7,7 @@ import { ChevronDown } from 'lucide-react';
 const FAQS = [
   {
     q: 'How do I start using LIZY?',
-    a: 'The fastest way is Telegram — just message @lizy_agent. LIZY will create a wallet for you automatically. For API access, use the MCP endpoint at mcp.lizy.world with your wallet address header.',
+    a: 'The fastest way is Telegram — just message @lizy_agentbot. LIZY will create a wallet for you automatically. For API access, use the MCP endpoint at mcp.lizy.world with your wallet address header.',
   },
   {
     q: 'What chains does LIZY support?',

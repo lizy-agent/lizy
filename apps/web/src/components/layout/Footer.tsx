@@ -15,7 +15,7 @@ const FOOTER_LINKS = {
     { href: '/privacy', label: 'Privacy Policy' },
   ],
   Community: [
-    { href: 'https://t.me/lizy_agent', label: 'Telegram Bot', external: true },
+    { href: 'https://t.me/lizy_agentbot', label: 'Telegram Bot', external: true },
     { href: 'https://twitter.com/lizy_agent', label: 'Twitter', external: true },
     { href: 'https://github.com/lizy-agent/lizy', label: 'GitHub', external: true },
   ],
@@ -39,7 +39,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-3 mt-6">
               <a
-                href="https://t.me/lizy_agent"
+                href="https://t.me/lizy_agentbot"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-lg glass flex items-center justify-center text-muted-foreground hover:text-white hover:border-neon-green/30 transition-colors"
