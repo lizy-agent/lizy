@@ -8,7 +8,7 @@ jobs:
     name: Swap PENGU - Join Claw Council
     runs-on: ubuntu-latest
     env:
-      AGENT_PRIVATE_KEY: ${{ secrets.PK }}
+      AGENT_PRIVATE_KEY: ${{ secrets.REGISTRAR_PRIVATE_KEY }}
     steps:
       - name: Clone Claw Council skill
         run: git clone https://github.com/saucaiii/claw-council.git
