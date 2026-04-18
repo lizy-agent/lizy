@@ -1,5 +1,5 @@
 import { Telegraf } from 'telegraf';
-import { startCommand } from './commands/start.js';
+import { startCommand, handleRefreshBalance } from './commands/start.js';
 import {
   balanceCommand, activityCommand, txCommand,
   reputationCommand, identityCommand, pudgyCommand,
@@ -24,10 +24,10 @@ bot.command('pudgy',      pudgyCommand);
 bot.command('price',      priceCommand);
 bot.command('help',       helpCommand);
 
-bot.action('export_pk', handleExportPk);
-bot.action('reveal_pk', handleRevealPk);
+bot.action('export_pk',       handleExportPk);
+bot.action('reveal_pk',       handleRevealPk);
+bot.action('refresh_balance', handleRefreshBalance);
 
-// Fallback for unknown messages
 bot.on('text', (ctx) => {
   ctx.reply('Use /help to see available commands.');
 });
