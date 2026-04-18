@@ -7,10 +7,9 @@ import { getRedis } from '../lib/redis';
 import { hashInput } from '../lib/ip';
 import { logToolCall } from '../lib/supabase';
 
-import { walletActivitySchema, reputationScoreSchema, identityDataSchema, getWalletActivity, getReputationScore, getIdentityData } from '../tools/onchain-oracle';
-import { pudgyMetadataSchema, verifyPudgyHolderSchema, getPudgyMetadata, verifyPudgyHolder } from '../tools/pudgy-penguins';
-import { tokenPriceSchema, crossChainLookupSchema, getTokenPrice, getCrossChainLookup } from '../tools/token-price';
-import { transformDataSchema, transformData } from '../tools/data-transform';
+import { walletActivitySchema, walletBalanceSchema, transactionSchema, reputationScoreSchema, identityDataSchema, getWalletActivity, getWalletBalance, getTransaction, getReputationScore, getIdentityData } from '../tools/onchain-oracle';
+import { verifyPudgyHolderSchema, verifyPudgyHolder } from '../tools/pudgy-penguins';
+import { tokenPriceSchema, getTokenPrice } from '../tools/token-price';
 import { getAcpJobSchema, listAcpJobsSchema, getAcpJob, listAcpJobs } from '../tools/acp';
 import { z } from 'zod';
 
@@ -35,16 +34,15 @@ async function incrementDemoQuota(address: string): Promise<number> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TOOLS: Record<string, { schema: z.ZodTypeAny; fn: (input: any) => Promise<unknown> }> = {
-  get_wallet_activity:    { schema: walletActivitySchema,    fn: getWalletActivity },
-  get_reputation_score:   { schema: reputationScoreSchema,   fn: getReputationScore },
-  get_identity_data:      { schema: identityDataSchema,      fn: getIdentityData },
-  get_pudgy_metadata:     { schema: pudgyMetadataSchema,     fn: getPudgyMetadata },
-  verify_pudgy_holder:    { schema: verifyPudgyHolderSchema, fn: verifyPudgyHolder },
-  get_token_price:        { schema: tokenPriceSchema,        fn: getTokenPrice },
-  get_cross_chain_lookup: { schema: crossChainLookupSchema,  fn: getCrossChainLookup },
-  transform_data:         { schema: transformDataSchema,     fn: transformData },
-  get_acp_job:            { schema: getAcpJobSchema,         fn: getAcpJob },
-  list_acp_jobs:          { schema: listAcpJobsSchema,       fn: listAcpJobs },
+  get_wallet_activity:  { schema: walletActivitySchema,  fn: getWalletActivity },
+  get_wallet_balance:   { schema: walletBalanceSchema,   fn: getWalletBalance },
+  get_transaction:      { schema: transactionSchema,     fn: getTransaction },
+  get_reputation_score: { schema: reputationScoreSchema, fn: getReputationScore },
+  get_identity_data:    { schema: identityDataSchema,    fn: getIdentityData },
+  verify_pudgy_holder:  { schema: verifyPudgyHolderSchema, fn: verifyPudgyHolder },
+  get_token_price:      { schema: tokenPriceSchema,      fn: getTokenPrice },
+  get_acp_job:          { schema: getAcpJobSchema,       fn: getAcpJob },
+  list_acp_jobs:        { schema: listAcpJobsSchema,     fn: listAcpJobs },
 };
 
 router.post(

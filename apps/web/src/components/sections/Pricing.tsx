@@ -13,7 +13,7 @@ const TIERS = [
     highlight: false,
     features: [
       'x402 single-call payments',
-      'All 10 MCP + A2A tools',
+      'All 9 MCP + A2A tools',
       'USDC.e on Abstract Mainnet',
       'Abstract Global Wallet auth',
       'Standard rate limits',
