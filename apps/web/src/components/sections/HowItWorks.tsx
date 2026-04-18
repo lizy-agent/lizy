@@ -1,14 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Wallet, Search, CreditCard, CheckCircle } from 'lucide-react';
+import { MessageCircle, Search, CreditCard, CheckCircle } from 'lucide-react';
 
 const STEPS = [
   {
-    icon: Wallet,
+    icon: MessageCircle,
     step: '01',
-    title: 'Connect Wallet',
-    description: 'Connect your Abstract Global Wallet (AGW). No MetaMask required.',
+    title: 'Chat on Telegram',
+    description: 'Message @lizy_agent on Telegram. LIZY gives you a dedicated wallet — no sign-up needed.',
     color: 'text-purple-400',
     bg: 'bg-purple-400/10',
     border: 'border-purple-400/20',
@@ -16,8 +16,8 @@ const STEPS = [
   {
     icon: Search,
     step: '02',
-    title: 'Call a Tool',
-    description: 'Send a JSON-RPC request to the MCP endpoint with your wallet address header.',
+    title: 'Ask in Plain English',
+    description: 'Ask anything: "What\'s my balance?", "Check this wallet\'s reputation", "Show me recent transactions."',
     color: 'text-blue-400',
     bg: 'bg-blue-400/10',
     border: 'border-blue-400/20',
@@ -26,7 +26,7 @@ const STEPS = [
     icon: CreditCard,
     step: '03',
     title: 'Pay Automatically',
-    description: 'First 100 calls are free. After that, pay per call via x402 or MPP session.',
+    description: 'LIZY pays for data calls via x402 using USDC.e from your wallet. No manual approval.',
     color: 'text-neon-green',
     bg: 'bg-neon-green/10',
     border: 'border-neon-green/20',
@@ -35,7 +35,7 @@ const STEPS = [
     icon: CheckCircle,
     step: '04',
     title: 'Get On-Chain Data',
-    description: 'Receive compact JSON responses sourced directly from Abstract Mainnet RPC.',
+    description: 'Receive live data sourced directly from Abstract Mainnet RPC — balances, activity, prices, reputation.',
     color: 'text-orange-400',
     bg: 'bg-orange-400/10',
     border: 'border-orange-400/20',
@@ -56,10 +56,10 @@ export function HowItWorks() {
             How It Works
           </div>
           <h2 className="font-display text-4xl font-bold text-white mb-4">
-            Simple, pay-per-use data access
+            AI agent meets on-chain data
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            LIZY sits between AI agents and the blockchain. Agents pay micro-fees for verified on-chain data.
+            Chat with LIZY on Telegram or integrate via API. Pay per query with USDC.e — automatically, via x402.
           </p>
         </motion.div>
 
