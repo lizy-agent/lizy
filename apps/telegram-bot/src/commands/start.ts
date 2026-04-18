@@ -17,6 +17,7 @@ export async function startCommand(ctx: Context) {
       `All queries run on\\-chain via Abstract Mainnet\\. You get *100 free calls/day*\\.`,
       ``,
       `*What you can do:*`,
+      `/wallet — your address & export private key`,
       `/balance — ETH & token balances`,
       `/activity — recent on\\-chain events`,
       `/tx \\<hash\\> — transaction details`,

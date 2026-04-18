@@ -5,6 +5,7 @@ import {
   reputationCommand, identityCommand, pudgyCommand,
   priceCommand, helpCommand,
 } from './commands/tools.js';
+import { walletCommand, handleExportPk, handleRevealPk } from './commands/wallet.js';
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 if (!token) throw new Error('TELEGRAM_BOT_TOKEN is required');
@@ -13,6 +14,7 @@ if (!process.env.BOT_WALLET_SEED) throw new Error('BOT_WALLET_SEED is required')
 const bot = new Telegraf(token);
 
 bot.command('start',      startCommand);
+bot.command('wallet',     walletCommand);
 bot.command('balance',    balanceCommand);
 bot.command('activity',   activityCommand);
 bot.command('tx',         txCommand);
@@ -21,6 +23,9 @@ bot.command('identity',   identityCommand);
 bot.command('pudgy',      pudgyCommand);
 bot.command('price',      priceCommand);
 bot.command('help',       helpCommand);
+
+bot.action('export_pk', handleExportPk);
+bot.action('reveal_pk', handleRevealPk);
 
 // Fallback for unknown messages
 bot.on('text', (ctx) => {

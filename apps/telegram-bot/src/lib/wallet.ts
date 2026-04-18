@@ -1,4 +1,4 @@
-import { keccak256, toBytes, toHex } from 'viem';
+import { keccak256, toBytes } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
 // Derive a deterministic EOA per Telegram user ID from a secret seed.
@@ -6,7 +6,8 @@ import { privateKeyToAccount } from 'viem/accounts';
 export function deriveWallet(telegramUserId: number) {
   const seed = `${process.env.BOT_WALLET_SEED}:${telegramUserId}`;
   const pk = keccak256(toBytes(seed)) as `0x${string}`;
-  return privateKeyToAccount(pk);
+  const account = privateKeyToAccount(pk);
+  return { ...account, privateKey: pk };
 }
 
 export function shortAddr(address: string): string {

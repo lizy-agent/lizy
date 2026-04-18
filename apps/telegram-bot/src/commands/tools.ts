@@ -94,6 +94,7 @@ export async function helpCommand(ctx: Context) {
     `Your wallet: \`${wallet.address}\``,
     '',
     '*Commands:*',
+    '/wallet — your address & export private key',
     '/balance `[address]` — ETH & token balances',
     '/activity `[address]` — recent on-chain events',
     '/tx `<hash>` — transaction details',
