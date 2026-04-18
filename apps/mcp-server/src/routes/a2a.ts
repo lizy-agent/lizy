@@ -123,7 +123,7 @@ const SKILLS = [
 const AGENT_CARD = {
   schemaVersion: '1.0',
   humanReadableId: 'lizy-agent/lizy',
-  agentVersion: '0.3.0',
+  agentVersion: '0.3.1',
   name: 'LIZY',
   description:
     'On-chain data oracle for AI agents on Abstract Mainnet. ' +
@@ -131,7 +131,7 @@ const AGENT_CARD = {
     'Pudgy Penguin NFT metadata, token prices, ACP job state (ERC-8183), and ' +
     'data transforms — all paid via x402 micropayments in USDC.e.',
   url: `${BASE_URL}/a2a`,
-  version: '0.3.0',
+  version: '0.3.1',
   protocolVersion: '0.3.0',
   provider: {
     name: 'LIZY',
