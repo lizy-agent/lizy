@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion';
 
 const STATS = [
-  { value: '8', label: 'MCP Tools', sub: 'production ready' },
-  { value: '2', label: 'Chains', sub: 'Abstract + Ethereum' },
+  { value: '9', label: 'MCP Tools', sub: 'production ready' },
+  { value: 'ERC-8004', label: 'Agent Identity', sub: 'registered on Abstract' },
   { value: '<30ms', label: 'Cached Response', sub: 'via Upstash Redis' },
   { value: '100%', label: 'On-Chain Data', sub: 'no scraping' },
 ];

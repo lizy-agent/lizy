@@ -6,20 +6,24 @@ import { ChevronDown } from 'lucide-react';
 
 const FAQS = [
   {
+    q: 'How do I start using LIZY?',
+    a: 'The fastest way is Telegram — just message @lizy_agent. LIZY will create a wallet for you automatically. For API access, use the MCP endpoint at mcp.lizy.world with your wallet address header.',
+  },
+  {
     q: 'What chains does LIZY support?',
     a: 'LIZY primarily uses Abstract Mainnet (chainId 2741) for all on-chain data and payments. Pudgy Penguins verification uses Ethereum Mainnet only for reading the NFT contract.',
   },
   {
     q: 'What payment methods are accepted?',
-    a: 'LIZY accepts x402 micropayments and MPP (session billing). Both use USDC.e on Abstract Mainnet. The first 100 calls per day are free, no payment required.',
+    a: 'LIZY accepts x402 micropayments using USDC.e on Abstract Mainnet. In the Telegram bot, payments happen automatically — LIZY signs and pays on your behalf from your derived wallet.',
   },
   {
-    q: 'How are holder perks verified?',
-    a: 'Perks are verified entirely on-chain via eth_call. PENGU balance is checked on Abstract Mainnet, Pudgy Penguin ownership is checked on Ethereum Mainnet. No API keys or off-chain data are used.',
+    q: 'What wallet do I need for the Telegram bot?',
+    a: 'None — LIZY derives a dedicated wallet for you from your Telegram user ID. You can check your wallet address with /wallet, and top it up with USDC.e to enable paid queries.',
   },
   {
-    q: 'What wallet do I need?',
-    a: 'LIZY uses Abstract Global Wallet (AGW) exclusively. AGW is a smart contract wallet native to Abstract Mainnet. No MetaMask or RainbowKit needed.',
+    q: 'Is LIZY a real AI agent?',
+    a: 'Yes. LIZY is registered on-chain as an ERC-8004 agent on Abstract Mainnet. It uses Claude (Anthropic) for natural language understanding and autonomously calls on-chain tools, pays for data via x402, and returns verified results.',
   },
   {
     q: 'Is the data sourced from external APIs?',
@@ -28,10 +32,6 @@ const FAQS = [
   {
     q: 'What is the MCP protocol?',
     a: 'MCP (Model Context Protocol) is an open standard for connecting AI agents to data sources and tools. LIZY implements a JSON-RPC 2.0 MCP server that AI agents can call directly.',
-  },
-  {
-    q: 'What is the rate limit?',
-    a: '60 requests per minute per IP, and 30 requests per minute per wallet. After exceeding the free quota, each call requires x402 or MPP payment.',
   },
   {
     q: 'Is LIZY open source?',

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Twitter, Github, Globe } from 'lucide-react';
+import { Twitter, Github, MessageCircle } from 'lucide-react';
 
 const FOOTER_LINKS = {
   Product: [
@@ -15,6 +15,7 @@ const FOOTER_LINKS = {
     { href: '/privacy', label: 'Privacy Policy' },
   ],
   Community: [
+    { href: 'https://t.me/lizy_agent', label: 'Telegram Bot', external: true },
     { href: 'https://twitter.com/lizy_agent', label: 'Twitter', external: true },
     { href: 'https://github.com/lizy-agent/lizy', label: 'GitHub', external: true },
   ],
@@ -34,9 +35,18 @@ export function Footer() {
               <span className="font-display font-bold text-lg text-white">LIZY</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
-              The data layer AI agents pay to use. Built on Abstract Mainnet.
+              AI agent and data layer for the Abstract ecosystem.
             </p>
             <div className="flex items-center gap-3 mt-6">
+              <a
+                href="https://t.me/lizy_agent"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-lg glass flex items-center justify-center text-muted-foreground hover:text-white hover:border-neon-green/30 transition-colors"
+                aria-label="Telegram"
+              >
+                <MessageCircle className="w-4 h-4" />
+              </a>
               <a
                 href="https://twitter.com/lizy_agent"
                 target="_blank"
@@ -54,15 +64,6 @@ export function Footer() {
                 aria-label="GitHub"
               >
                 <Github className="w-4 h-4" />
-              </a>
-              <a
-                href="https://lizy.world"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg glass flex items-center justify-center text-muted-foreground hover:text-white hover:border-neon-green/30 transition-colors"
-                aria-label="Website"
-              >
-                <Globe className="w-4 h-4" />
               </a>
             </div>
           </div>
