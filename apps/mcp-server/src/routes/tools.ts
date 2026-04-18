@@ -13,31 +13,30 @@ import { logToolCall } from '../lib/supabase';
 
 import {
   walletActivitySchema,
+  walletBalanceSchema,
+  transactionSchema,
   reputationScoreSchema,
   identityDataSchema,
   getWalletActivity,
+  getWalletBalance,
+  getTransaction,
   getReputationScore,
   getIdentityData,
   PRICES as ORACLE_PRICES,
 } from '../tools/onchain-oracle';
 
 import {
-  pudgyMetadataSchema,
   verifyPudgyHolderSchema,
-  getPudgyMetadata,
   verifyPudgyHolder,
   PRICES as PUDGY_PRICES,
 } from '../tools/pudgy-penguins';
 
 import {
   tokenPriceSchema,
-  crossChainLookupSchema,
   getTokenPrice,
-  getCrossChainLookup,
   PRICES as TOKEN_PRICES,
 } from '../tools/token-price';
 
-import { transformDataSchema, transformData, PRICE as TRANSFORM_PRICE } from '../tools/data-transform';
 import { getAcpJobSchema, listAcpJobsSchema, getAcpJob, listAcpJobs, PRICES as ACP_PRICES } from '../tools/acp';
 
 const router: ReturnType<typeof Router> = Router();
@@ -59,6 +58,10 @@ function buildToolMiddleware(price: number) {
     createMppChargeMiddleware(price),
     createX402Middleware(price),
   ];
+}
+
+function buildFreeToolMiddleware() {
+  return [...sharedMiddleware];
 }
 
 function wrapTool<TIn, TOut>(
@@ -148,6 +151,18 @@ router.post(
 );
 
 router.post(
+  '/get_wallet_balance',
+  buildToolMiddleware(ORACLE_PRICES.get_wallet_balance),
+  wrapTool(walletBalanceSchema, getWalletBalance, 'get_wallet_balance', ORACLE_PRICES.get_wallet_balance),
+);
+
+router.post(
+  '/get_transaction',
+  buildToolMiddleware(ORACLE_PRICES.get_transaction),
+  wrapTool(transactionSchema, getTransaction, 'get_transaction', ORACLE_PRICES.get_transaction),
+);
+
+router.post(
   '/get_reputation_score',
   buildToolMiddleware(ORACLE_PRICES.get_reputation_score),
   wrapTool(reputationScoreSchema, getReputationScore, 'get_reputation_score', ORACLE_PRICES.get_reputation_score),
@@ -159,13 +174,7 @@ router.post(
   wrapTool(identityDataSchema, getIdentityData, 'get_identity_data', ORACLE_PRICES.get_identity_data),
 );
 
-// ── Pudgy Penguin Routes ──────────────────────────────────────────────────────
-router.post(
-  '/get_pudgy_metadata',
-  buildToolMiddleware(PUDGY_PRICES.get_pudgy_metadata),
-  wrapTool(pudgyMetadataSchema, getPudgyMetadata, 'get_pudgy_metadata', PUDGY_PRICES.get_pudgy_metadata),
-);
-
+// ── Pudgy Ecosystem Routes ────────────────────────────────────────────────────
 router.post(
   '/verify_pudgy_holder',
   buildToolMiddleware(PUDGY_PRICES.verify_pudgy_holder),
@@ -177,19 +186,6 @@ router.post(
   '/get_token_price',
   buildToolMiddleware(TOKEN_PRICES.get_token_price),
   wrapTool(tokenPriceSchema, getTokenPrice, 'get_token_price', TOKEN_PRICES.get_token_price),
-);
-
-router.post(
-  '/get_cross_chain_lookup',
-  buildToolMiddleware(TOKEN_PRICES.get_cross_chain_lookup),
-  wrapTool(crossChainLookupSchema, getCrossChainLookup, 'get_cross_chain_lookup', TOKEN_PRICES.get_cross_chain_lookup),
-);
-
-// ── Transform Route ───────────────────────────────────────────────────────────
-router.post(
-  '/transform_data',
-  buildToolMiddleware(TRANSFORM_PRICE),
-  wrapTool(transformDataSchema, transformData, 'transform_data', TRANSFORM_PRICE),
 );
 
 // ── ACP (ERC-8183) Routes ─────────────────────────────────────────────────────

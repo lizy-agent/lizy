@@ -8,10 +8,11 @@
 import { z } from 'zod';
 import { createHash } from 'crypto';
 import { keccak256, isAddress, toBytes } from 'viem';
-import { TransformDataOutput, TransformOperation } from '@lizy/types';
+type TransformOperation = 'json_to_csv' | 'csv_to_json' | 'sha256' | 'keccak256' | 'validate_address' | 'validate_json';
+interface TransformDataOutput { operation: TransformOperation; result: string; valid?: boolean; error?: string; }
 
 // ── Pricing ───────────────────────────────────────────────────────────────────
-export const PRICE = 0.001; // $0.001 USDC.e
+export const PRICE = 0; // free utility tool
 
 // ── Zod Schema ────────────────────────────────────────────────────────────────
 export const transformDataSchema = z.object({
