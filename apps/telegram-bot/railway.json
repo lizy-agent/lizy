@@ -1,8 +1,5 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
-  "build": {
-    "dockerfilePath": "apps/telegram-bot/Dockerfile"
-  },
   "deploy": {
     "healthcheckPath": null,
     "restartPolicyType": "ON_FAILURE",

@@ -1,25 +1,17 @@
-FROM node:22-alpine AS base
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-FROM base AS deps
-WORKDIR /repo
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY apps/telegram-bot/package.json ./apps/telegram-bot/
-RUN pnpm install --frozen-lockfile
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY package.json ./
+RUN npm install
 
 FROM deps AS builder
-COPY apps/telegram-bot ./apps/telegram-bot
-RUN pnpm --filter @lizy/telegram-bot build
+COPY tsconfig.json ./
+COPY src ./src
+RUN npm exec tsc
 
 FROM node:22-alpine AS runner
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-WORKDIR /repo
+WORKDIR /app
 ENV NODE_ENV=production
-
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY apps/telegram-bot/package.json ./apps/telegram-bot/
-RUN pnpm install --frozen-lockfile --prod
-
-COPY --from=builder /repo/apps/telegram-bot/dist ./apps/telegram-bot/dist
-
-CMD ["node", "apps/telegram-bot/dist/index.js"]
+COPY --from=builder /app/dist ./dist
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json ./
+CMD ["node", "dist/index.js"]
