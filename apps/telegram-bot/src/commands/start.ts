@@ -1,11 +1,20 @@
 import { Context } from 'telegraf';
 import { deriveWallet } from '../lib/wallet.js';
 
+const LIZY_URL = process.env.LIZY_API_URL ?? 'https://mcp.lizy.world';
+
 export async function startCommand(ctx: Context) {
   const userId = ctx.from?.id;
   if (!userId) return;
 
   const account = deriveWallet(userId);
+
+  // Auto-agree to ToS on first start — user agrees by using the bot
+  await fetch(`${LIZY_URL}/terms/agree`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Wallet-Address': account.address },
+    body: JSON.stringify({ version: 1 }),
+  }).catch(() => {});
 
   await ctx.replyWithMarkdown(
     [

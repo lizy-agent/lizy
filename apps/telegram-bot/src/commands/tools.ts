@@ -16,6 +16,8 @@ function resolveAddress(ctx: Context, arg?: string): string {
   return walletOf(ctx).address;
 }
 
+const LIZY_URL = process.env.LIZY_API_URL ?? 'https://mcp.lizy.world';
+
 async function run(ctx: Context, fn: () => Promise<string>) {
   const msg = await ctx.reply('Fetching from Abstract Mainnet...');
   try {
@@ -23,6 +25,20 @@ async function run(ctx: Context, fn: () => Promise<string>) {
     await ctx.telegram.editMessageText(ctx.chat!.id, msg.message_id, undefined, text, { parse_mode: 'Markdown' });
   } catch (err) {
     const e = err as Error;
+    if (e.message.includes('Terms of Service')) {
+      // Auto-agree and retry once
+      const wallet = walletOf(ctx);
+      await fetch(`${LIZY_URL}/terms/agree`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Wallet-Address': wallet.address },
+        body: JSON.stringify({ version: 1 }),
+      }).catch(() => {});
+      try {
+        const text = await fn();
+        await ctx.telegram.editMessageText(ctx.chat!.id, msg.message_id, undefined, text, { parse_mode: 'Markdown' });
+        return;
+      } catch { /* fall through to error */ }
+    }
     await ctx.telegram.editMessageText(ctx.chat!.id, msg.message_id, undefined, `Error: ${e.message}`);
   }
 }
