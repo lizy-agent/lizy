@@ -27,7 +27,9 @@ lizy/
 
 | Tool | Description | Price |
 |------|-------------|-------|
-| `get_wallet_activity` | eth_getLogs last 1000 blocks | $0.005 USDC.e |
+| `get_wallet_activity` | eth_getLogs last N blocks | $0.005 USDC.e |
+| `get_wallet_balance` | ETH + ERC20 balances | $0.002 USDC.e |
+| `get_transaction` | Transaction details by hash | $0.003 USDC.e |
 | `get_reputation_score` | Reputation Registry (ERC-8004) | $0.003 USDC.e |
 | `get_identity_data` | Identity Registry tokenURI | $0.002 USDC.e |
 | `get_token_price` | On-chain DEX price aggregation | $0.003 USDC.e |
@@ -43,15 +45,7 @@ lizy/
 
 | Tool | Description | Price |
 |------|-------------|-------|
-| `get_pudgy_metadata` | Pudgy Penguins NFT metadata | $0.004 USDC.e |
-| `verify_pudgy_holder` | Verify Pudgy Penguin ownership | $0.002 USDC.e |
-
-**Utility (Free)**
-
-| Tool | Description | Price |
-|------|-------------|-------|
-| `get_cross_chain_lookup` | Cross-chain token lookup | Free |
-| `transform_data` | JSON↔CSV, hash, validate | Free |
+| `verify_pudgy_holder` | Verify Pudgy Penguin ownership on Ethereum | $0.002 USDC.e |
 
 ## Free Tier
 

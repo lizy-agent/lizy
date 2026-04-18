@@ -1,7 +1,7 @@
 {
   "name": "lizy",
   "version": "0.1.0",
-  "description": "The data layer AI agents pay to use.",
+  "description": "AI-native data layer for the Abstract ecosystem.",
   "homepage": "https://lizy.world",
   "repository": "https://github.com/lizy-agent/lizy",
   "mcp": {
@@ -29,13 +29,14 @@
     }
   },
   "tools": [
-    { "name": "get_wallet_activity", "priceUsdc": 0.005 },
+    { "name": "get_wallet_activity",  "priceUsdc": 0.005 },
+    { "name": "get_wallet_balance",   "priceUsdc": 0.002 },
+    { "name": "get_transaction",      "priceUsdc": 0.003 },
     { "name": "get_reputation_score", "priceUsdc": 0.003 },
-    { "name": "get_identity_data", "priceUsdc": 0.002 },
-    { "name": "get_pudgy_metadata", "priceUsdc": 0.004 },
-    { "name": "verify_pudgy_holder", "priceUsdc": 0.002 },
-    { "name": "get_token_price", "priceUsdc": 0.003 },
-    { "name": "get_cross_chain_lookup", "priceUsdc": 0.005 },
-    { "name": "transform_data", "priceUsdc": 0.001 }
+    { "name": "get_identity_data",    "priceUsdc": 0.002 },
+    { "name": "verify_pudgy_holder",  "priceUsdc": 0.002 },
+    { "name": "get_token_price",      "priceUsdc": 0.003 },
+    { "name": "get_acp_job",          "priceUsdc": 0.002 },
+    { "name": "list_acp_jobs",        "priceUsdc": 0.003 }
   ]
 }
