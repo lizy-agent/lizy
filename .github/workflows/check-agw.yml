@@ -1,0 +1,23 @@
+name: Check AGW Wallet Address
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Show AGW Address and Balance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install viem @abstract-foundation/agw-client
+
+      - name: Show AGW address and balance
+        env:
+          REGISTRAR_PRIVATE_KEY: ${{ secrets.REGISTRAR_PRIVATE_KEY }}
+        run: node scripts/check-agw.mjs
