@@ -24,9 +24,9 @@ async function main() {
   const pk = ('0x' + raw.trim().replace(/^0x/, ''));
   const signer = privateKeyToAccount(pk);
 
-  const publicClient = createPublicClient({ chain: ABSTRACT_MAINNET, transport: http() });
+  const publicClient = createPublicClient({ chain: ABSTRACT_MAINNET, transport: http('https://api.mainnet.abs.xyz') });
 
-  const agwAddress = await getSmartAccountAddressFromInitialSigner(signer.address);
+  const agwAddress = await getSmartAccountAddressFromInitialSigner(signer.address, publicClient);
   const [eoaEth, agwEth] = await Promise.all([
     publicClient.getBalance({ address: signer.address }),
     publicClient.getBalance({ address: agwAddress }),
