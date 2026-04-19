@@ -1,6 +1,6 @@
 // Deploy/verify AGW from EOA private key on Abstract Mainnet
 // The AGW address is deterministic — same EOA always gets same AGW address
-import { createPublicClient, http, formatEther } from 'viem';
+import { createPublicClient, http, formatEther, getAddress } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createAbstractClient, getSmartAccountAddressFromInitialSigner } from '@abstract-foundation/agw-client';
 
@@ -11,7 +11,7 @@ const ABSTRACT_MAINNET = {
   rpcUrls: { default: { http: ['https://api.mainnet.abs.xyz'] } },
 };
 
-const PENGU = '0x9E18B8AF9Fe1Be6Cc9F4E5cE69cDe54F8aECe95';
+const PENGU = getAddress('0x9e18b8af9fe1be6cc9f4e5ce69cde54f8aece95');
 const ERC20_ABI = [
   { name: 'balanceOf', type: 'function', inputs: [{ name: 'a', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
   { name: 'decimals', type: 'function', inputs: [], outputs: [{ type: 'uint8' }], stateMutability: 'view' },
