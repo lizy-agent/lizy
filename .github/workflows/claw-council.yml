@@ -8,20 +8,32 @@ jobs:
     name: Swap PENGU - Join Claw Council
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies for AGW setup
+        run: npm install viem @abstract-foundation/agw-client
+
+      - name: Setup AGW (deploy if not deployed + show address)
+        env:
+          REGISTRAR_PRIVATE_KEY: ${{ secrets.REGISTRAR_PRIVATE_KEY }}
+        run: node scripts/setup-agw.mjs
+
       - name: Clone Claw Council skill
         run: git clone https://github.com/saucailli/claw-council.git
 
-      - name: Install dependencies
+      - name: Install Claw Council dependencies
         run: cd claw-council && npm install
 
-      - name: Normalize private key and check AGW readiness
+      - name: Check AGW readiness
         env:
           RAW_PK: ${{ secrets.REGISTRAR_PRIVATE_KEY }}
         run: |
           KEY="${RAW_PK// /}"
           KEY="${KEY#0x}"
-          export AGENT_PRIVATE_KEY="0x${KEY}"
-          echo "Key length: ${#AGENT_PRIVATE_KEY} chars"
           cd claw-council && AGENT_PRIVATE_KEY="0x${KEY}" node examples/check_readiness.js
 
       - name: Run PENGU swap verification
